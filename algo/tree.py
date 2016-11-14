@@ -54,7 +54,7 @@ class BaseNode:
     #     return ret
 
 
-def pretty_tree(root, pad1='', pad2='', pad3='', html=False, is_root=True):
+def pretty_tree_vetical(root, pad1='', pad2='', pad3='', html=False, is_root=True):
     """
     :type root: BaseNode
     """
@@ -63,18 +63,85 @@ def pretty_tree(root, pad1='', pad2='', pad3='', html=False, is_root=True):
     if root is None:
         return '{pad2}None'.format(pad2=pad2)
 
+    data = repr(root.data)
+    if html:
+        data = escape(data)
+
     ret = '\n'.join([
-        pretty_tree(root.left,
+        pretty_tree_vetical(root.left,
                     pad1 + '    ', pad1 + '┌───', pad1 + '│   ',
                     html=html, is_root=False),
-        '{pad2}[{data}]'.format(pad2=pad2, data=escape(repr(root.data))),
-        pretty_tree(root.right,
+        '{pad2}[{data}]'.format(pad2=pad2, data=data),
+        pretty_tree_vetical(root.right,
                     pad3 + '│   ', pad3 + '└───', pad3 + '    ',
                     html=html, is_root=False),
     ])
 
     if html and is_root:
         ret = '<pre>\n' + ret + '</pev>\n'
+    return ret
+
+
+def pretty_tree(root, html=False):
+    # TODO: fullwidth char?
+    from html import escape
+
+    def fmt_data(data):
+        s = repr(data)
+        if html:
+            s = escape(s)
+        return '[{}]'.format(s)
+
+    def sub(root):
+        if root is None:
+            return ['NIL'], 1
+
+        lbox, lpos = sub(root.left)
+        rbox, rpos = sub(root.right)
+
+        conn_line = ' ' * lpos + '┌' + '─' * (len(lbox[0]) - lpos - 1)
+        conn_line += '┴'
+        conn_line += '─' * rpos + '┐'
+        conn_line = conn_line.ljust(len(lbox[0]) + 1 + len(rbox[0]))
+        conn_pos = len(lbox[0])
+
+        jbox = [conn_line]
+        for i in range(max(len(lbox), len(rbox))):
+            if i < len(lbox):
+                line1 = lbox[i]
+            else:
+                line1 = ' ' * len(lbox[0])
+            if i < len(rbox):
+                line2 = rbox[i]
+            else:
+                line2 = ' ' * len(rbox[0])
+
+            assert len(line1) + 1 + len(line2) == len(conn_line)
+            jbox.append(line1 + ' ' + line2)
+
+        data_line = fmt_data(root.data)
+        assert len(data_line) >= 1
+        center = (len(data_line) + 1) // 2 - 1
+
+        if center < conn_pos:
+            data_line = ' ' * (conn_pos - center) + data_line
+        elif conn_pos < center:
+            pad = ' ' * (center - conn_pos)
+            for i, line in enumerate(jbox):
+                line = pad + line
+                jbox[i] = line
+            conn_pos = center
+
+        jbox.insert(0, data_line)
+        box_width = max(len(line) for line in jbox)
+        for i, line in enumerate(jbox):
+            jbox[i] = line.ljust(box_width)
+        return jbox, conn_pos
+
+    box, _ = sub(root)
+    ret = '\n'.join(box)
+    if html:
+        ret = '<pre>\n' + ret + '</pre>\n'
     return ret
 
 
