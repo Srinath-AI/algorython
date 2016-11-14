@@ -8,6 +8,6 @@ dist: trusty
 
 # command to install dependencies
 install:
-  - pip install pip install pytest-sugar
+  - pip install pytest-sugar
 # command to run tests
 script: pytest -s --verbose algo/tests/
