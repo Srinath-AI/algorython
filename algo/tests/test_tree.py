@@ -228,9 +228,10 @@ def rbtree_from_nested_list(seq):
         left = seq[1] if len(seq) >= 2 else None
         right = seq[2] if len(seq) == 3 else None
 
+        node_left = create_root(left)
         node = RBNode(serial, color)
         serial += 1
-        node.left = create_root(left)
+        node.left = node_left
         node.right = create_root(right)
         return node
 
@@ -239,8 +240,7 @@ def rbtree_from_nested_list(seq):
 
 
 def test_is_rbtree():
-    R = RBNode.RED
-    B = RBNode.BLACK
+    R, B = RBNode.RED, RBNode.BLACK
     cases = (
         (True,  None),
         (True,  (B, None, None)),
@@ -279,6 +279,25 @@ def test_is_rbtree():
         assert is_rbtree(tree.root) is ans
 
 
+def test_pretty_tree():
+    R, B = RBNode.RED, RBNode.BLACK
+    tree = rbtree_from_nested_list([B, B, [B, R, R]])
+    ans = '''
+       ■1
+   ┌───┴───────┐
+   ■0          ■3
+ ┌─┴─┐     ┌───┴───┐
+NIL NIL    □2      □4
+         ┌─┴─┐   ┌─┴─┐
+        NIL NIL NIL NIL'''
+
+    def process(string):
+        return [ line.rstrip() for line in string.splitlines() if line.strip() ]
+
+    output = pretty_tree(tree.root)
+    assert process(output) == process(ans)
+
+
 if __name__ == '__main__':
     test_middle_iter()
     test_is_bstree()
@@ -289,3 +308,4 @@ if __name__ == '__main__':
     test_bst_max_min()
 
     test_is_rbtree()
+    test_pretty_tree()

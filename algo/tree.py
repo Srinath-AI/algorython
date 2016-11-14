@@ -83,28 +83,42 @@ def pretty_tree_vetical(root, pad1='', pad2='', pad3='', html=False, is_root=Tru
 
 
 def pretty_tree(root, html=False):
+    """
+    :type root: BaseNode
+    """
+
     # TODO: fullwidth char?
+    # TODO: colorize rbtree with html
     from html import escape
 
-    def fmt_data(data):
-        s = repr(data)
+    def fmt_data(node):
+        formated = repr(node.data)
         if html:
-            s = escape(s)
-        return '[{}]'.format(s)
+            formated = escape(formated)
 
-    def sub(root):
-        if root is None:
+        if hasattr(node, 'color'):
+            dot = {RBNode.BLACK: '■', RBNode.RED: '□'}[node.color]
+            formated = dot + formated
+        else:
+            formated = '[{}]'.format(formated)
+        return formated
+
+    def make_box(node):
+        if node is None:
             return ['NIL'], 1
 
-        lbox, lpos = sub(root.left)
-        rbox, rpos = sub(root.right)
+        lbox, lpos = make_box(node.left)
+        rbox, rpos = make_box(node.right)
 
+        # lines that connecting parent and children
         conn_line = ' ' * lpos + '┌' + '─' * (len(lbox[0]) - lpos - 1)
         conn_line += '┴'
         conn_line += '─' * rpos + '┐'
         conn_line = conn_line.ljust(len(lbox[0]) + 1 + len(rbox[0]))
+        # postion of the center of parent
         conn_pos = len(lbox[0])
 
+        # join 2 boxes
         jbox = [conn_line]
         for i in range(max(len(lbox), len(rbox))):
             if i < len(lbox):
@@ -119,10 +133,12 @@ def pretty_tree(root, html=False):
             assert len(line1) + 1 + len(line2) == len(conn_line)
             jbox.append(line1 + ' ' + line2)
 
-        data_line = fmt_data(root.data)
+        # data of parent node
+        data_line = fmt_data(node)
         assert len(data_line) >= 1
         center = (len(data_line) + 1) // 2 - 1
 
+        # adjust left padding between data_line and jbox
         if center < conn_pos:
             data_line = ' ' * (conn_pos - center) + data_line
         elif conn_pos < center:
@@ -133,15 +149,18 @@ def pretty_tree(root, html=False):
             conn_pos = center
 
         jbox.insert(0, data_line)
+
+        # adjust right padding between data_line and jbox
         box_width = max(len(line) for line in jbox)
         for i, line in enumerate(jbox):
             jbox[i] = line.ljust(box_width)
+
         return jbox, conn_pos
 
-    box, _ = sub(root)
+    box, _ = make_box(root)
     ret = '\n'.join(box)
     if html:
-        ret = '<pre>\n' + ret + '</pre>\n'
+        ret = '<pre>\n' + ret + '\n</pre>\n'
     return ret
 
 
@@ -441,20 +460,20 @@ def is_rbtree(root):
     class NotRBTree(Exception):
         pass
 
-    def check(root):
-        if root is None:
+    def check(node):
+        if node is None:
             return 1
 
-        if root.color == RBNode.RED:    # children of red node is black
-            if not (rb_color_of(root.left) == rb_color_of(root.right) == RBNode.BLACK):
+        if node.color == RBNode.RED:    # children of red node is black
+            if not (rb_color_of(node.left) == rb_color_of(node.right) == RBNode.BLACK):
                 raise NotRBTree
 
-        lcount = check(root.left)
-        rcount = check(root.right)
+        lcount = check(node.left)
+        rcount = check(node.right)
         if lcount != rcount:
             raise NotRBTree
 
-        return lcount + int(root.color == RBNode.BLACK)
+        return lcount + int(node.color == RBNode.BLACK)
 
     try:
         check(root)
