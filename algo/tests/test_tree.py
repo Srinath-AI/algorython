@@ -212,6 +212,73 @@ def test_bst_max_min():
     print('BSTree::min() & BSTree::max() passed test in', duration, 's.')
 
 
+def rbtree_from_nested_list(seq):
+    serial = 0
+
+    def create_root(seq):
+        nonlocal serial
+
+        if seq is None:
+            return None
+        if not isinstance(seq, (tuple, list)):
+            seq = (seq,)
+        assert 1 <= len(seq) <= 3
+
+        color = seq[0]
+        left = seq[1] if len(seq) >= 2 else None
+        right = seq[2] if len(seq) == 3 else None
+
+        node = RBNode(serial, color)
+        serial += 1
+        node.left = create_root(left)
+        node.right = create_root(right)
+        return node
+
+    root = create_root(seq)
+    return RBTree(root)
+
+
+def test_is_rbtree():
+    R = RBNode.RED
+    B = RBNode.BLACK
+    cases = (
+        (True,  None),
+        (True,  (B, None, None)),
+        (False, (R, None, None)),
+        (True,  (B,
+                    R,
+                    R,)),
+        (True,  (B,
+                    None,
+                    R,)),
+        (False, (B,
+                    B,
+                    None)),
+        (True,  (B,
+                    B,
+                    B)),
+        (False, (B,
+                    (R,
+                        B),
+                    (R,
+                        B),)),
+        (False, (B,
+                    (R,
+                        R,
+                        R),
+                    R,)),
+        (True,  (B,
+                    B,
+                    (R,
+                        B,
+                        B),)),
+    )
+
+    for ans, ques in cases:
+        tree = rbtree_from_nested_list(ques)
+        assert is_rbtree(tree.root) is ans
+
+
 if __name__ == '__main__':
     test_middle_iter()
     test_is_bstree()
@@ -220,3 +287,5 @@ if __name__ == '__main__':
     test_bst_remove()
     test_bst_remove_alt()
     test_bst_max_min()
+
+    test_is_rbtree()

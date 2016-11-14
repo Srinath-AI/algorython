@@ -211,6 +211,8 @@ class BSNode(BaseNode):
                 return self.right
 
     def remove_self_alt(self):
+        # alternate implementation of remove_self()
+
         if self.left is self.right is None:
             return None
 
@@ -256,7 +258,7 @@ class BaseTree:
 
     def __init__(self, root=None):
         """
-        :type root: BSNode
+        :type root: BaseNode
         """
         self.root = root
 
@@ -350,3 +352,63 @@ class BSTree(BaseTree):
             c, p = c.right, c
 
         return c
+
+
+def rb_color_of(node):
+    """
+    :type node: RBNode
+    """
+    if node is None:
+        return RBNode.BLACK
+    else:
+        return node.color
+
+
+def is_rbtree(root):
+    """
+    :type root: RBNode
+    """
+    if rb_color_of(root) == RBNode.RED:
+        return False    # root must be black
+
+    class NotRBTree(Exception):
+        pass
+
+    def check(root):
+        if root is None:
+            return 1
+
+        if root.color == RBNode.RED:    # children of red node is black
+            if not (rb_color_of(root.left) == rb_color_of(root.right) == RBNode.BLACK):
+                raise NotRBTree
+
+        lcount = check(root.left)
+        rcount = check(root.right)
+        if lcount != rcount:
+            raise NotRBTree
+
+        return lcount + int(root.color == RBNode.BLACK)
+
+    try:
+        check(root)
+    except NotRBTree:
+        return False
+    else:
+        return True
+
+
+class RBNode(BaseNode):
+    __slots__ = ('color',)
+
+    RED   = 0
+    BLACK = 1
+
+    def __init__(self, data, color=None):
+        super().__init__(data)
+        if color is None:
+            color = self.BLACK
+        self.color = color
+
+
+class RBTree(BaseTree):
+    __slots__ = ()

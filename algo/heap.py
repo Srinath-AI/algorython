@@ -51,6 +51,7 @@ def heap_make(arr, key=None):
 
 
 def heap_verify(arr, top=0, key=None):
+    # TODO: non-recursive version
     key = key or (lambda x: x)
     child_indexes = [ func(top)
                       for func in (heap_left, heap_right)
