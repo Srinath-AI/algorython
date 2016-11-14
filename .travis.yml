@@ -2,6 +2,10 @@ language: python
 python:
   - "3.4"
 
+addons:
+  code_climate:
+    repo_token: fa9e0617b8778a1186d75363c3c6ddc119d2cb360abdabcd2c85a0cbc35ee87e
+
 # Ubuntu 14.04 Trusty support
 sudo: required
 dist: trusty
@@ -11,9 +15,10 @@ install:
   - pip install pytest-sugar
   - pip install pytest-cov
   - pip install coveralls
+  - pip install codeclimate-test-reporter
 
 # command to run tests
 script: pytest -s --verbose algo/tests/
 
 after_success:
-  pytest -s --verbose --cov=algo algo/tests/ && coveralls
+  pytest -s --verbose --cov=algo algo/tests/ && coveralls && codeclimate-test-reporter
