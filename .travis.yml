@@ -9,5 +9,11 @@ dist: trusty
 # command to install dependencies
 install:
   - pip install pytest-sugar
+  - pip install pytest-cov
+  - pip install coveralls
+
 # command to run tests
 script: pytest -s --verbose algo/tests/
+
+after_success:
+  pytest -s --verbose --cov=algo algo/tests/ && coveralls
