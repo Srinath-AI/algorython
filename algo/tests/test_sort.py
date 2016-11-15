@@ -1,5 +1,5 @@
 from functools import partial
-from itertools import groupby
+from itertools import groupby, chain
 
 from algo.sort import *
 from algo.tests.utils import gen_case, gen_special_case, get_func_name, print_matrix, timed_test
@@ -63,8 +63,13 @@ def test_stable_sort():
             assert sorted(indexes) == indexes
 
     for func, desc in stable_sort_funcs:
-        with timed_test(desc):
-            for arr in gen_case(7):
+        def gen_spec_case(size):
+            spec_cases = gen_special_case(size)
+            for case in ('rand', 'dup', 'dup99'):
+                yield spec_cases[case]
+
+        with timed_test(desc, 'stable sort'):
+            for arr in chain(gen_case(7), gen_spec_case(5000)):
                 indexed = list(enumerate(arr))      # index, key
                 func(indexed, key=lambda x: x[1])   # sort by key
                 check_stable(indexed)
