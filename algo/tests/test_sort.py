@@ -26,15 +26,6 @@ stable_sort_funcs = (
 
 
 def test_sort():
-    # def is_sorted(arr, **kwargs):
-    #     nkey = get_sort_key(**kwargs)
-    #
-    #     for i in range(len(arr) - 1):
-    #         if nkey(arr[i + 1]) < nkey(arr[i]):
-    #             return False
-    #     else:
-    #         return True
-
     def check_sorted(arr, func=qsort, **kwargs):
         copy = arr.copy()
         try:
@@ -46,34 +37,23 @@ def test_sort():
         std_kwargs = {
             x: kwargs[x] for x in ('reverse', 'key') if x in kwargs
         }
+
+        # this is the fastest way to check wether arr is sorted
         ans = sorted(copy, **std_kwargs)
-
-        # succ = is_sorted(copy, **kwargs)
         assert copy == ans, 'sort({arr}) -> {copy}'.format_map(vars())
-
-    # test ReversedKey
-    check_sorted([1, 2, 3, 4], reverse=True)
-    # test reversed bucket_sort
-    check_sorted(list(range(100)), func=bucket_sort, reverse=True)
-
-    # check_sorted([])
-    # check_sorted([3, 2, 1])
-    # check_sorted([1, 2, 3, 0, 0])
-    # check_sorted([1, 1, 1, 1])
-    # check_sorted([1, 5, 6, 7, 8])
-    # check_sorted([6, 1, 2, 3, 4, 5])
-    # check_sorted([1, 2, 3, 4, 5])
-    # check_sorted([5, 4, 3, 2, 1])
 
     def perm_test(func, desc, maxlen=7):
         kwargs = getattr(func, 'keywords', {})
 
-        with timed_test(desc):
+        with timed_test(desc, 'permutation'):
             for seq in gen_case(maxlen):
                 check_sorted(seq, func=func, **kwargs)
 
     for sorter, description in all_sort_funcs:
         perm_test(sorter, description)
+        # test ReversedKey and reversed sort
+        check_sorted(list(range(100)), func=sorter, reverse=True)
+        check_sorted(list(range(100, 0, -1)), func=sorter, reverse=True)
 
 
 def test_stable_sort():
