@@ -51,6 +51,7 @@ def pretty_tree(root, html=False):
 
     # TODO: fullwidth char?
     # TODO: colorize rbtree with html
+    # TODO: colorize in ipython console
     from html import escape
 
     def fmt_data(node):
@@ -214,4 +215,14 @@ class BaseTree:
         return sum(1 for _ in self.node_iter())
 
     def _repr_html_(self):
+        # for ipython
         return pretty_tree(self.root, html=True)
+
+    try:
+        # TODO: better way to detect ipython
+        get_ipython
+    except NameError:
+        pass
+    else:
+        def __repr__(self):
+            return pretty_tree(self.root)
