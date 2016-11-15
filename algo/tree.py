@@ -488,10 +488,8 @@ class RBNode(BaseNode):
     RED   = 0
     BLACK = 1
 
-    def __init__(self, data, color=None):
+    def __init__(self, data, color=RED):
         super().__init__(data)
-        if color is None:
-            color = self.BLACK
         self.color = color
 
     def deepcopy(self):
@@ -508,6 +506,7 @@ class RBTree(BaseTree):
         return RBTree(self.root.deepcopy() if self.root is not None else None)
 
     def insert_data(self, data):
+        # TODO: simplify this
         if self.root is None:
             self.root = self.node_type(data, RBNode.BLACK)
             return self.root
@@ -521,9 +520,10 @@ class RBTree(BaseTree):
             else:
                 stack.pop()     # pop None
 
+            node = self.node_type(data, color=RBNode.RED)
+
             cur = stack.pop()
             if cur.color == RBNode.BLACK:
-                node = self.node_type(data, color=RBNode.RED)
                 if data < cur.data:
                     assert cur.right is None or cur.right.color == RBNode.RED
                     cur.left = node
@@ -616,7 +616,6 @@ class RBTree(BaseTree):
 
                         return
 
-                node = self.node_type(data, color=RBNode.BLACK)
                 if cur is p.left:
                     if data < cur.data:
                         #     B
@@ -624,9 +623,11 @@ class RBTree(BaseTree):
                         #   R   ?
                         #  /
                         # X
+                        node.color = RBNode.BLACK
                         cur.left = node
                         p.left = None
                         cur.right = p
+
                         set_new_top(cur, p)
                     else:
                         #     B
@@ -634,7 +635,6 @@ class RBTree(BaseTree):
                         #   R   ?
                         #    \
                         #     X
-                        node.color = RBNode.RED
                         node.left = cur
                         cur.color = RBNode.BLACK
                         node.right = p
@@ -648,7 +648,6 @@ class RBTree(BaseTree):
                         # ?   R
                         #    /
                         #   X
-                        node.color = RBNode.RED
                         node.left = p
                         node.right = cur
                         cur.color = RBNode.BLACK
@@ -663,6 +662,7 @@ class RBTree(BaseTree):
                         #       X
                         cur.left = p
                         p.right = None
+                        node.color = RBNode.BLACK
                         cur.right = node
 
                         set_new_top(cur, p)
