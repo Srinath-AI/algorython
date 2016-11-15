@@ -1,6 +1,7 @@
 from time import perf_counter
 from collections import Counter
 from functools import partial
+from itertools import chain
 
 from algo.tree import *
 from algo.heap import heap_parent
@@ -298,6 +299,40 @@ NIL NIL    □2      □4
     assert process(output) == process(ans)
 
 
+def test_rbtree_insert():
+    max_len = 7
+    nums = []
+
+    def recur(tree, count):
+        nonlocal nums
+
+        if not nums:
+            new_nums = uniq_nums = [0]
+        else:
+            uniq_nums = sorted(set(nums))
+            new_nums = [ (uniq_nums[i] + uniq_nums[i + 1]) / 2 for i in range(len(uniq_nums) - 1) ]
+            new_nums.extend([min(nums) - 1, max(nums) + 1])
+
+        for num in chain(new_nums, uniq_nums):
+            nums.append(num)
+
+            t = tree.deepcopy()
+            t.insert_data(num)
+            assert t.count() == count + 1
+            assert is_rbtree(t.root)
+            assert is_bstree(t.root)
+            if len(nums) < max_len:
+                recur(t, count + 1)
+
+            nums.pop()
+
+    t1 = perf_counter()
+    recur(RBTree(), 0)
+    duration = perf_counter() - t1
+
+    print('RBTree::insert_data() passed test in', duration, 's.')
+
+
 if __name__ == '__main__':
     test_middle_iter()
     test_is_bstree()
@@ -309,3 +344,4 @@ if __name__ == '__main__':
 
     test_is_rbtree()
     test_pretty_tree()
+    test_rbtree_insert()
