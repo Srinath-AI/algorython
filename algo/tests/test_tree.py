@@ -3,34 +3,35 @@ from functools import partial
 from itertools import chain
 
 from algo.tree import *
-from algo.heap import heap_parent
+from algo.heap import heap_left, heap_right
 from algo.tests.utils import get_func_name, timed_test, timeit
 
 
-def gen_tree_shape(level):
+def gen_tree_shape(max_level):
     # %time list(map(list, gen_tree_shape(5)))
-    # Wall time: 2.87 s
+    # Wall time: 1.5-1.8 s
 
-    size = 2 ** level - 1
+    size = 2 ** max_level - 1
     heap = [False] * size
 
-    def g(start):
-        if start >= size:
-            raise StopIteration
+    def g(root):
+        yield heap
+        if root > size:
+            return
 
-        parent = heap_parent(start)
-        if parent < 0 or heap[parent]:
-            heap[start] = True
+        heap[root] = True
+
+        left, right = heap_left(root), heap_right(root)
+        if right < size:
+            for _ in g(left):
+                yield from g(right)
+        elif left < size:
+            yield from g(left)
+        else:
             yield heap
-            yield from g(start + 1)
-            heap[start] = False
 
-        next_start = start + 1
-        # while next_start < size and not heap[heap_parent(next_start)]:
-        #     next_start += 1
-        yield from g(next_start)
+        heap[root] = False
 
-    yield heap
     yield from g(0)
 
 
