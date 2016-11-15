@@ -1,6 +1,9 @@
 import random
 from collections import OrderedDict
 from itertools import chain
+from contextlib import contextmanager
+from time import perf_counter
+import functools
 
 
 def asc_seq(maxlen):
@@ -219,3 +222,33 @@ def print_matrix(mat):
         print()
 
     print_table(table)
+
+
+@contextmanager
+def timed_test(name, test_name=''):
+    def get_duration():
+        return duration
+
+    t1 = perf_counter()
+    try:
+        yield get_duration
+    except Exception:
+        print(name, 'failed', test_name, 'with an exception.')
+        raise
+    else:
+        duration = perf_counter() - t1
+        print(name, 'passed', test_name, 'test in', fmt_time(duration))
+
+
+def timeit(name, test_name=''):
+    assert isinstance(name, str)
+
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapped():
+            with timed_test(name, test_name):
+                f()
+
+        return wrapped
+
+    return decorator

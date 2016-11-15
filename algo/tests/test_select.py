@@ -1,32 +1,27 @@
-from time import perf_counter
 from functools import partial
 
-from algo.tests.utils import get_func_name, gen_case, gen_special_case, print_matrix
+from algo.tests.utils import get_func_name, gen_case, gen_special_case, print_matrix, timed_test
 from algo.select import *
 
 
 def test_nth_small():
     for func in (nth_small_mm, nth_small):
-        func_name = get_func_name(func)
-        t1 = perf_counter()
-        for seq in gen_case(7):
-            copy = seq.copy()
-            if len(copy) == 0:
-                continue
+        with timed_test(get_func_name(func)):
+            for seq in gen_case(7):
+                copy = seq.copy()
+                if len(copy) == 0:
+                    continue
 
-            sorted_input = sorted(copy)
-            for i in range(len(copy)):
-                n = i + 1
-                selected = func(copy.copy(), n)
-                assert selected == sorted_input[i], \
-                    '{func_name}({copy}, {n}) -> {selected}'.format_map(vars())
-
-        duration = perf_counter() - t1
-        print(func_name, 'passed test in', duration, 's')
+                sorted_input = sorted(copy)
+                for i in range(len(copy)):
+                    n = i + 1
+                    selected = func(copy.copy(), n)
+                    assert selected == sorted_input[i], \
+                        '{func_name}({copy}, {n}) -> {selected}'.format_map(vars())
 
     for large_func in (nth_large, nth_large_mm):
-        assert large_func(list(range(100)), 5) == 95
-        print(get_func_name(large_func), 'passed test')
+        with timed_test(get_func_name(large_func)):
+            assert large_func(list(range(100)), 5) == 95
 
 
 def test_nth_small_perf():
@@ -48,12 +43,10 @@ def test_nth_small_perf():
         print('BEGIN', func_name)
 
         for case, arr in cases.items():
-            t1 = perf_counter()
-            func(arr.copy(), len(arr) // 2)
-            duration = perf_counter() - t1
-            matrix[-1][1].append((case, duration))
-
-            print('{func_name}(*{case}*) pass performance test in {duration} s.'.format_map(locals()))
+            desc = '{func_name}(_{case}_)'.format_map(locals())
+            with timed_test(desc, 'performance') as get_duration:
+                func(arr.copy(), len(arr) // 2)
+            matrix[-1][1].append((case, get_duration()))
 
         print('END', func_name)
         print()

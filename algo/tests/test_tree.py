@@ -1,11 +1,10 @@
-from time import perf_counter
 from collections import Counter
 from functools import partial
 from itertools import chain
 
 from algo.tree import *
 from algo.heap import heap_parent
-from algo.tests.utils import get_func_name
+from algo.tests.utils import get_func_name, timed_test, timeit
 
 
 def gen_tree_shape(level):
@@ -82,41 +81,35 @@ def gen_bst(level):
 
 def test_middle_iter():
     for iterator in (middle_iter, middle_iter_bystack):
-        t1 = perf_counter()
-        for root in gen_bst(4):
-            count = BSTree(root).count()
-            expanded = list(iterator(root))
-            assert len(expanded) == count
-            assert sorted(expanded, key=lambda n: n.data) == expanded, \
-                '{expanded}'.format_map(vars())
-
-        duration = perf_counter() - t1
-        print(get_func_name(iterator), 'passed test in', duration, 's.')
+        with timed_test(get_func_name(iterator)):
+            for root in gen_bst(4):
+                count = BSTree(root).count()
+                expanded = list(iterator(root))
+                assert len(expanded) == count
+                assert sorted(expanded, key=lambda n: n.data) == expanded, \
+                    '{expanded}'.format_map(vars())
 
 
 def test_is_bstree():
     for iterator in (middle_iter, middle_iter_bystack):
         is_bstree_func = partial(is_bstree, iterator=iterator)
 
-        t1 = perf_counter()
-        for bst in gen_bst(4):
-            assert is_bstree_func(bst)
+        with timed_test('is_bstree()'):
+            for bst in gen_bst(4):
+                assert is_bstree_func(bst)
 
-        not_bst = (
-            [0, 1, 2],
-            [0, 1],
-            [0, -1, 2, -2, 1]
-        )
-        for heap in not_bst:
-            tree = BaseTree.from_heap(heap)
-            assert not is_bstree_func(tree.root)
-
-        duration = perf_counter() - t1
-        print('is_bstree() with', get_func_name(iterator), 'passed test in', duration, 's.')
+            not_bst = (
+                [0, 1, 2],
+                [0, 1],
+                [0, -1, 2, -2, 1]
+            )
+            for heap in not_bst:
+                tree = BaseTree.from_heap(heap)
+                assert not is_bstree_func(tree.root)
 
 
+@timeit('BSTree::find_*()')
 def test_bst_find():
-    t1 = perf_counter()
     for root in gen_bst(4):
         tree = BSTree(root)
         counter = Counter(n.data for n in tree.node_iter())
@@ -134,12 +127,9 @@ def test_bst_find():
                           max(tree.data_iter(), default=0) + 1):
             assert tree.find_first(non_exist) is None
 
-    duration = perf_counter() - t1
-    print('BSTree::find_*() passed test in', duration, 's.')
 
-
+@timeit('BSTree::insert()')
 def test_bst_insert():
-    t1 = perf_counter()
     for root in gen_bst(4):
         tree = BSTree(root)
         to_insert = sorted(set(tree.data_iter()))
@@ -156,12 +146,9 @@ def test_bst_insert():
             assert tree.count() == count + 1
             assert is_bstree(tree.root)
 
-    duration = perf_counter() - t1
-    print('BSTree::insert() passed test in', duration, 's.')
 
-
+@timeit('BSTree::remove_first()')
 def test_bst_remove():
-    t1 = perf_counter()
     for root in gen_bst(4):
         tree = BSTree(root)
         to_remove = sorted(set(tree.data_iter()))
@@ -186,9 +173,6 @@ def test_bst_remove():
             assert not tree.remove_first(num)
             assert tree.count() == count
 
-    duration = perf_counter() - t1
-    print('BSTree::remove_first() passed test in', duration, 's.')
-
 
 def test_bst_remove_alt():
     orgin = BSNode.remove_self
@@ -198,8 +182,8 @@ def test_bst_remove_alt():
     BSNode.remove_self = orgin
 
 
+@timeit('BSTree::min() & BSTree::max()')
 def test_bst_max_min():
-    t1 = perf_counter()
     for root in gen_bst(4):
         tree = BSTree(root)
         if root:
@@ -208,9 +192,6 @@ def test_bst_max_min():
         else:
             assert tree.min() is None
             assert tree.max() is None
-
-    duration = perf_counter() - t1
-    print('BSTree::min() & BSTree::max() passed test in', duration, 's.')
 
 
 def rbtree_from_nested_list(seq):
@@ -299,6 +280,7 @@ NIL NIL    □2      □4
     assert process(output) == process(ans)
 
 
+@timeit('RBTree::insert_data()')
 def test_rbtree_insert():
     max_len = 7
     nums = []
@@ -326,11 +308,7 @@ def test_rbtree_insert():
 
             nums.pop()
 
-    t1 = perf_counter()
     recur(RBTree(), 0)
-    duration = perf_counter() - t1
-
-    print('RBTree::insert_data() passed test in', duration, 's.')
 
 
 if __name__ == '__main__':

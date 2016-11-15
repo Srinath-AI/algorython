@@ -1,9 +1,8 @@
 from functools import partial
 from itertools import groupby
-from time import perf_counter
 
 from algo.sort import *
-from algo.tests.utils import gen_case, gen_special_case, get_func_name, print_matrix
+from algo.tests.utils import gen_case, gen_special_case, get_func_name, print_matrix, timed_test
 
 
 all_sort_funcs = (
@@ -66,19 +65,15 @@ def test_sort():
     # check_sorted([1, 2, 3, 4, 5])
     # check_sorted([5, 4, 3, 2, 1])
 
-    def perm_test(func, maxlen=7):
-        func_name = get_func_name(func)
+    def perm_test(func, desc, maxlen=7):
         kwargs = getattr(func, 'keywords', {})
 
-        t1 = perf_counter()
-        for seq in gen_case(maxlen):
-            check_sorted(seq, func=func, **kwargs)
-        duration = perf_counter() - t1
+        with timed_test(desc):
+            for seq in gen_case(maxlen):
+                check_sorted(seq, func=func, **kwargs)
 
-        print('{func_name}(*, **{kwargs}) passed perm_test in {duration} s.'.format_map(locals()))
-
-    for func, description in all_sort_funcs:
-        perm_test(func)
+    for sorter, description in all_sort_funcs:
+        perm_test(sorter, description)
 
 
 def test_stable_sort():
@@ -88,41 +83,35 @@ def test_stable_sort():
             assert sorted(indexes) == indexes
 
     for func, desc in stable_sort_funcs:
-        t1 = perf_counter()
-        for arr in gen_case(7):
-            indexed = list(enumerate(arr))      # index, key
-            func(indexed, key=lambda x: x[1])   # sort by key
-            check_stable(indexed)
-        duration = perf_counter() - t1
-
-        print(desc, 'passed stable sort test in', duration, 's.')
+        with timed_test(desc):
+            for arr in gen_case(7):
+                indexed = list(enumerate(arr))      # index, key
+                func(indexed, key=lambda x: x[1])   # sort by key
+                check_stable(indexed)
 
 
 def test_sort_perf():
     matrix = []
     cases = gen_special_case(2000)
 
-    for func, description in all_sort_funcs:
-        matrix.append([description, []])
-        print('BEGIN {}'.format(description))
+    for func, desc in all_sort_funcs:
+        matrix.append([desc, []])
+        print('BEGIN {}'.format(desc))
 
         for case, arr in cases.items():
             func_name = get_func_name(func)
             kwargs = getattr(func, 'keywords', {})
 
-            t1 = perf_counter()
             try:
-                func(arr.copy())
+                with timed_test('{desc}(_{case}_)'.format_map(locals()), 'performance') as get_duration:
+                    func(arr.copy())
             except:
-                print(func, arr)
+                print(desc, arr)
                 raise
-            duration = perf_counter() - t1
+            else:
+                matrix[-1][1].append((case, get_duration()))
 
-            matrix[-1][1].append((case, duration))
-            print('{func_name}(_{case}_, **{kwargs}) passed perf test in {duration} s.'
-                  .format_map(locals()))
-
-        print('END {}'.format(description))
+        print('END {}'.format(desc))
         print()
 
     print_matrix(matrix)
