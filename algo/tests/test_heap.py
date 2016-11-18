@@ -2,6 +2,17 @@ from algo.tests.utils import gen_case, get_func_name, timeit, timed_test
 from algo.heap import *
 
 
+def test_heap_verify():
+    cases = (
+        (False, [2, 2, 3]),
+        (True,  [2, 2, 2]),
+        (False, [2, 3, 2]),
+    )
+
+    for ans, case in cases:
+        assert heap_verify(case) is ans
+
+
 @timeit('heap_make()')
 def test_heap_make():
     for seq in gen_case(7):
@@ -27,6 +38,10 @@ def test_heap_push():
             testbed = heap.copy()
             heap_push(testbed, n)
             assert heap_verify(testbed)
+
+    arr = [2, 1, 0]
+    heap_push(arr, 3, end=1)
+    assert arr == [3, 2, 0]
 
 
 @timeit('heap_pop()')

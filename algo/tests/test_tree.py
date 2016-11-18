@@ -265,6 +265,9 @@ def test_is_rbtree():
 
 
 def test_pretty_tree():
+    def process(string):
+        return [ line.rstrip() for line in string.splitlines() if line.strip() ]
+
     R, B = RBNode.RED, RBNode.BLACK
     tree = rbtree_from_nested_list([B, B, [B, R, R]])
     ans = '''
@@ -276,8 +279,15 @@ NIL NIL    □2      □4
          ┌─┴─┐   ┌─┴─┐
         NIL NIL NIL NIL'''
 
-    def process(string):
-        return [ line.rstrip() for line in string.splitlines() if line.strip() ]
+    output = pretty_tree(tree.root)
+    assert process(output) == process(ans)
+
+    tree = RBTree()
+    tree.insert_data(+8601010086)
+    ans = '''
+■8601010086
+   ┌─┴─┐
+  NIL NIL'''
 
     output = pretty_tree(tree.root)
     assert process(output) == process(ans)
