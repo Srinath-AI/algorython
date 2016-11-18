@@ -214,13 +214,14 @@ class BaseTree:
     def count(self):
         return sum(1 for _ in self.node_iter())
 
+    # for ipython
     def _repr_html_(self):
-        # for ipython
         return pretty_tree(self.root, html=True)
 
+    # TODO: _repr_svg_()
+
     try:
-        # TODO: better way to detect ipython
-        get_ipython
+        __IPYTHON__
     except NameError:
         pass
     else:

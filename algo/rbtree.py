@@ -111,11 +111,11 @@ class RBTree(BaseTree):
 
                     if (pp is ppp.left) == (top is pp.left):
                         #     (ppp) B
-                        #          / \          R (pp)
-                        #    (pp) R   *        / \
-                        #        / \     ===> B   B (ppp)
-                        # (top) R   *        / \  |\
-                        #      / \          *   * * *
+                        #          / \         R (pp)
+                        #    (pp) R   *       / \
+                        #        / \     ==> B   B (ppp)
+                        # (top) R   *       / \  |\
+                        #      / \         *   * * *
                         #     *   *
 
                         top.color = RBNode.BLACK
@@ -127,13 +127,13 @@ class RBTree(BaseTree):
                         old = ppp
                         continue  # tail recursion
                     else:
-                        #  (ppp) B              (ppp) B
-                        #       / \                  / \              R (top)
-                        # (pp) R   *          (top) R   *            / \
-                        #     / \        ===>      / \    ===> (pp) B   B (ppp)
-                        #    *   R (top)     (pp) R   *            / \  |\
-                        #       / \              / \              *   * * *
-                        #      *   *            *   *
+                        #  (ppp) B             (ppp) B
+                        #       / \                 / \             R (top)
+                        # (pp) R   *         (top) R   *           / \
+                        #     / \        ==>      / \    ==> (pp) B   B (ppp)
+                        #    *   R (top)    (pp) R   *           / \  |\
+                        #       / \             / \             *   * * *
+                        #      *   *           *   *
 
                         pp.color = RBNode.BLACK
                         if pp is ppp.left:
