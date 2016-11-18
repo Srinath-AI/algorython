@@ -169,9 +169,9 @@ class BSTree(BaseTree):
         if self.root is None:
             return None
 
-        c, p = self.root, None
+        c = self.root
         while c.left is not None:
-            c, p = c.left, c
+            c = c.left
 
         return c
 
@@ -179,8 +179,8 @@ class BSTree(BaseTree):
         if self.root is None:
             return None
 
-        c, p = self.root, None
+        c = self.root
         while c.right is not None:
-            c, p = c.right, c
+            c = c.right
 
         return c
