@@ -44,6 +44,54 @@ class BaseNode:
         return node
 
 
+def _tree_to_graphviz(tree, graph_param=None):
+    """
+    :type tree: BaseTree
+    """
+    import graphviz
+    import itertools
+
+    def tree_repr_short(tree):
+        return object.__repr__(tree)
+
+    g = graphviz.Digraph()
+    g.attr('node', style='filled', shape='box', fontname='fira', width='0', height='0')
+    graph_attr = dict(label=tree_repr_short(tree), labelloc='t')
+    graph_attr.update(graph_param or dict(size='16', ratio='compress'))
+    g.attr('graph', **graph_attr)
+
+    serial_gen = map(lambda x: 'N_{}'.format(x), itertools.count())
+
+    def get_node_option(node):
+        base = dict()
+        if hasattr(node, 'color'):
+            from algo.rbtree import RBNode
+            if node.color == RBNode.RED:
+                base.update(color='red')
+            else:
+                base.update(color='black', fontcolor='white')
+        elif node is None:
+            base.update(color='black', fontcolor='white')
+        else:
+            pass
+
+        return base
+
+    def sub(node, parent=None):
+        name = next(serial_gen)
+        if node is not None:
+            g.node(name, repr(node.data), **get_node_option(node))
+            sub(node.left, name)
+            sub(node.right, name)
+        else:
+            g.node(name, 'NIL', **get_node_option(node))
+        if parent is not None:
+            g.edge(parent, name)
+
+    sub(tree.root)
+    return g
+
+
 def pretty_tree(root, html=False):
     """
     :type root: BaseNode
@@ -218,12 +266,14 @@ class BaseTree:
     def _repr_html_(self):
         return pretty_tree(self.root, html=True)
 
-    # TODO: _repr_svg_()
+    def _repr_svg_(self):
+        return _tree_to_graphviz(self)._repr_svg_()
 
     try:
         __IPYTHON__
     except NameError:
         pass
     else:
+        # print ascii graph
         def __repr__(self):
             return pretty_tree(self.root)
