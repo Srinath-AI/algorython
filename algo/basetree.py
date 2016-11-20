@@ -92,9 +92,9 @@ def _tree_to_graphviz(tree, graph_param=None):
     return g
 
 
-def pretty_tree(root, html=False):
+def pretty_tree(tree, html=False):
     """
-    :type root: BaseNode
+    :type tree: BaseTree
     """
 
     # TODO: fullwidth char?
@@ -169,18 +169,18 @@ def pretty_tree(root, html=False):
 
         return jbox, conn_pos
 
-    box, _ = make_box(root)
+    box, _ = make_box(tree.root)
     ret = '\n'.join(box)
     if html:
         ret = '<pre>\n' + ret + '\n</pre>\n'
     return ret
 
 
-def print_tree(root):
+def print_tree(tree):
     """
-    :type root: BaseNode
+    :type root: BaseTree
     """
-    print(pretty_tree(root))
+    print(pretty_tree(tree))
 
 
 def middle_iter(root):
@@ -264,7 +264,7 @@ class BaseTree:
 
     # for ipython
     def _repr_html_(self):
-        return pretty_tree(self.root, html=True)
+        return pretty_tree(self, html=True)
 
     def _repr_svg_(self):
         return _tree_to_graphviz(self)._repr_svg_()
@@ -276,4 +276,4 @@ class BaseTree:
     else:
         # print ascii graph
         def __repr__(self):
-            return pretty_tree(self.root)
+            return pretty_tree(self)

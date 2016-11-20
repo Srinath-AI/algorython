@@ -279,7 +279,7 @@ NIL NIL    □2      □4
          ┌─┴─┐   ┌─┴─┐
         NIL NIL NIL NIL'''
 
-    output = pretty_tree(tree.root)
+    output = pretty_tree(tree)
     assert process(output) == process(ans)
 
     tree = RBTree()
@@ -289,7 +289,7 @@ NIL NIL    □2      □4
    ┌─┴─┐
   NIL NIL'''
 
-    output = pretty_tree(tree.root)
+    output = pretty_tree(tree)
     assert process(output) == process(ans)
 
 
