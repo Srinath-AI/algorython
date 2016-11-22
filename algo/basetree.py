@@ -169,11 +169,11 @@ def middle_iter_bystack(root):
                 stack.append(cur)
                 cur = cur.right
             else:
-                if not stack:           # go up
-                    raise StopIteration
-                cur, c = stack.pop(), cur
-
                 while True:
+                    if not stack:       # go up
+                        raise StopIteration
+                    cur, c = stack.pop(), cur
+
                     if c is cur.left:   # go up from left
                         yield cur
 
@@ -181,10 +181,6 @@ def middle_iter_bystack(root):
                             stack.append(cur)
                             cur = cur.right
                             break
-
-                    if not stack:       # go up
-                        raise StopIteration
-                    cur, c = stack.pop(), cur
 
 
 class BaseTree:
