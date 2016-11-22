@@ -88,17 +88,17 @@ def test_middle_iter():
             for root in gen_bst(4):
                 count = BSTree(root).count()
                 expanded = list(iterator(root))
-                # assert len(expanded) == count, print_tree(BSTree(root))
-                assert (len(expanded) == count
-                        and sorted(expanded, key=lambda n: n.data) == expanded), \
+                expanded_sorted = sorted(expanded, key=lambda n: n.data)
+                assert len(expanded) == count \
+                    and expanded_sorted == expanded == list(middle_iter(root)), \
                     ('{expanded}'.format_map(vars()), print_tree(BSTree(root)))
 
 
 def test_is_bstree():
-    for iterator in (middle_iter, middle_iter_bystack):
+    for iterator in (middle_iter, middle_iter_bystack, middle_iter_sm):
         is_bstree_func = partial(is_bstree, iterator=iterator)
 
-        with timed_test('is_bstree()'):
+        with timed_test('is_bstree(*, iterator={})'.format(get_func_name(iterator))):
             for bst in gen_bst(4):
                 assert is_bstree_func(bst)
 

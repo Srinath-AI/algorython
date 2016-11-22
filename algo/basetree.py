@@ -185,6 +185,7 @@ def middle_iter_bystack(root):
 
 def middle_iter_sm(root):
     """
+    State machine base implementation.
     :type root: BaseNode
     """
     if root is None:
