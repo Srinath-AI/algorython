@@ -123,7 +123,7 @@ def pretty_tree(tree):
 
 def print_tree(tree):
     """
-    :type root: BaseTree
+    :type tree: BaseTree
     """
     print(pretty_tree(tree))
 
