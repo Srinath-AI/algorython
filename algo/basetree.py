@@ -183,6 +183,52 @@ def middle_iter_bystack(root):
                             break
 
 
+def middle_iter_sm(root):
+    """
+    :type root: BaseNode
+    """
+    if root is None:
+        raise StopIteration
+
+    p1, p2 = root, root.left
+    state = 1
+    stack = [root]
+    while True:
+        if state == 1:
+            # assert p1 is stack[-1]
+            if p2 is None:
+                p1, p2 = p2, p1
+                state = 3
+            else:
+                p1, p2 = p2, p2.left
+                stack.append(p1)
+        elif state == 2:
+            # assert p1 is stack[-1]
+            if p2 is None:
+                p1, p2 = p2, p1
+                state = 4
+            else:
+                p1, p2 = p2, p2.left
+                stack.append(p1)
+                state = 1
+        elif state == 3:
+            # assert p2 is stack[-1]
+            yield p2
+            p1, p2 = p2, p2.right
+            state = 2
+        else:   # state = 4
+            # assert p2 is stack[-1]
+            stack.pop()
+            try:
+                p1, p2 = p2, stack[-1]
+            except IndexError:
+                raise StopIteration
+            if p1 is p2.left:
+                state = 3
+            else:
+                pass
+
+
 class BaseTree:
     __slots__ = ('root',)
     node_type = BaseNode

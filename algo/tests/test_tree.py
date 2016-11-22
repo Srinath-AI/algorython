@@ -83,14 +83,15 @@ def gen_bst(level):
 
 
 def test_middle_iter():
-    for iterator in (middle_iter, middle_iter_bystack):
+    for iterator in (middle_iter, middle_iter_bystack, middle_iter_sm):
         with timed_test(get_func_name(iterator)):
             for root in gen_bst(4):
                 count = BSTree(root).count()
                 expanded = list(iterator(root))
-                assert len(expanded) == count
-                assert sorted(expanded, key=lambda n: n.data) == expanded, \
-                    '{expanded}'.format_map(vars())
+                # assert len(expanded) == count, print_tree(BSTree(root))
+                assert (len(expanded) == count
+                        and sorted(expanded, key=lambda n: n.data) == expanded), \
+                    ('{expanded}'.format_map(vars()), print_tree(BSTree(root)))
 
 
 def test_is_bstree():
