@@ -44,20 +44,15 @@ class BaseNode:
         return node
 
 
-def pretty_tree(tree, html=False):
+def pretty_tree(tree):
     """
     :type tree: BaseTree
     """
-
     # TODO: fullwidth char?
-    # TODO: colorize rbtree with html
     # TODO: colorize in ipython console
-    from html import escape
 
     def fmt_data(node):
         formated = repr(node.data)
-        if html:
-            formated = escape(formated)
 
         if hasattr(node, 'color'):
             from algo.rbtree import RBNode
@@ -123,8 +118,6 @@ def pretty_tree(tree, html=False):
 
     box, _ = make_box(tree.root)
     ret = '\n'.join(box)
-    if html:
-        ret = '<pre>\n' + ret + '\n</pre>\n'
     return ret
 
 
@@ -258,9 +251,6 @@ class BaseTree:
         return sum(1 for _ in self.node_iter())
 
     # for ipython
-    def _repr_html_(self):
-        return pretty_tree(self, html=True)
-
     def _repr_svg_(self):
         return self._to_graphviz(self)._repr_svg_()
 
