@@ -1,4 +1,4 @@
-from algo.basetree import BaseNode, BaseTree
+from algo.basetree import BaseNode, BaseTree, rotate_left, rotate_right
 
 
 def rb_color_of(node):
@@ -68,91 +68,9 @@ class RBTree(BaseTree):
         return RBTree(self.root.deepcopy() if self.root is not None else None)
 
     def insert_data(self, data):
-        # TODO: simplify this
         if self.root is None:
             self.root = self.node_type(data, RBNode.BLACK)
             return self.root
-
-        def rotate_right(top):
-            assert top.left is not None
-            left = top.left
-            top.left = left.right
-            left.right = top
-            return left
-
-        def rotate_left(top):
-            assert top.right is not None
-            right = top.right
-            top.right = right.left
-            right.left = top
-            return right
-
-        def set_new_top(top, old):
-            while True:
-                try:
-                    pp = stack.pop()
-                except IndexError:
-                    pp = None
-
-                if pp is None:
-                    self.root = top
-                    if top.color == RBNode.RED:
-                        top.color = RBNode.BLACK
-                elif pp.left is old:
-                    pp.left = top
-                else:
-                    assert pp.right is old
-                    pp.right = top
-
-                # both parent and child is RED, adjust it
-                if pp is not None and top.color == pp.color == RBNode.RED:
-                    ppp = stack.pop()
-                    assert ppp.color == RBNode.BLACK
-
-                    if (pp is ppp.left) == (top is pp.left):
-                        #     (ppp) B
-                        #          / \         R (pp)
-                        #    (pp) R   *       / \
-                        #        / \     ==> B   B (ppp)
-                        # (top) R   *       / \  |\
-                        #      / \         *   * * *
-                        #     *   *
-
-                        top.color = RBNode.BLACK
-                        if pp is ppp.left:
-                            top = rotate_right(ppp)
-                        else:
-                            top = rotate_left(ppp)
-
-                        old = ppp
-                        continue  # tail recursion
-                    else:
-                        #  (ppp) B             (ppp) B
-                        #       / \                 / \             R (top)
-                        # (pp) R   *         (top) R   *           / \
-                        #     / \        ==>      / \    ==> (pp) B   B (ppp)
-                        #    *   R (top)    (pp) R   *           / \  |\
-                        #       / \             / \             *   * * *
-                        #      *   *           *   *
-
-                        pp.color = RBNode.BLACK
-                        if pp is ppp.left:
-                            assert top is pp.right
-                            ppp.left = rotate_left(pp)
-                            assert top is ppp.left
-                            ret = rotate_right(ppp)
-                            assert ret is top
-                        else:
-                            assert top is pp.left
-                            ppp.right = rotate_right(pp)
-                            assert top is ppp.right
-                            ret = rotate_left(ppp)
-                            assert ret is top
-
-                        old = ppp
-                        continue  # tail recursion
-
-                return
 
         stack = [self.root]
         while stack[-1] is not None:
@@ -163,70 +81,73 @@ class RBTree(BaseTree):
         else:
             stack.pop()     # pop None
 
+        cur = stack[-1]
         node = self.node_type(data, color=RBNode.RED)
+        if data < cur.data:
+            cur.left = node
+        else:
+            cur.right = node
 
-        cur = stack.pop()
-        if cur.color == RBNode.BLACK:
-            if data < cur.data:
-                assert cur.right is None or cur.right.color == RBNode.RED
-                cur.left = node
+        def set_top(old_top, new_top):
+            try:
+                p = stack[-1]
+            except IndexError:
+                self.root = new_top
             else:
-                assert cur.left is None or cur.left.color == RBNode.RED
-                cur.right = node
-        else:   # c.color == RBNode.RED
-            assert cur.left is cur.right is None
-            p = stack.pop()
-            assert p is not None
-
-            if cur is p.left:
-                if data < cur.data:
-                    #     B
-                    #    / \
-                    #   R   ?
-                    #  /
-                    # X
-                    node.color = RBNode.BLACK
-                    cur.left = node
-                    p.left = None
-                    cur.right = p
-
-                    set_new_top(cur, p)
+                if old_top is p.left:
+                    p.left = new_top
                 else:
-                    #     B
-                    #    / \
-                    #   R   ?
-                    #    \
-                    #     X
-                    node.left = cur
-                    cur.color = RBNode.BLACK
-                    node.right = p
-                    p.left = None
+                    p.right = new_top
 
-                    set_new_top(node, p)
-            else:
-                if data < cur.data:
-                    #   B
-                    #  / \
-                    # ?   R
-                    #    /
-                    #   X
-                    node.left = p
-                    node.right = cur
-                    cur.color = RBNode.BLACK
-                    p.right = None
+        def fix(red):
+            assert red.color == RBNode.RED
+            while red.color == RBNode.RED:
+                p = stack.pop()
 
-                    set_new_top(node, p)
+                if red.left is not None and red.left.color == RBNode.RED:
+                    if red is p.left:
+                        #     (p) B
+                        #        / \         R (red)
+                        # (red) R   *       / \
+                        #      / \     ==> B   B (p)
+                        #     R   *       / \  |\
+                        #    / \         *   * * *
+                        #   *   *
+                        top = rotate_right(p)
+                        top.left.color = RBNode.BLACK
+                    else:
+                        #   B (p)          B (p)
+                        #  / \            / \                  R
+                        # *   R (red)    *   R                / \
+                        #    / \     ==>    / \      ==> (p) B   B (red)
+                        #   R   *          *   R (red)      / \  |\
+                        #  / \                / \          *   * * *
+                        # *   *              *   *
+                        assert red is p.right
+                        p.right = rotate_right(red)
+                        top = rotate_left(p)
+                        top.right.color = RBNode.BLACK
                 else:
-                    #   B
-                    #  / \
-                    # ?   R
-                    #      \
-                    #       X
-                    cur.left = p
-                    p.right = None
-                    node.color = RBNode.BLACK
-                    cur.right = node
+                    assert red.right.color == RBNode.RED
+                    if red is p.left:
+                        p.left = rotate_left(red)
+                        top = rotate_right(p)
+                        top.left.color = RBNode.BLACK
+                    else:
+                        assert red is p.right
+                        top = rotate_left(p)
+                        top.right.color = RBNode.BLACK
 
-                    set_new_top(cur, p)
+                assert top.color == RBNode.RED
+                set_top(p, top)
+
+                try:
+                    red = stack.pop()   # recursion
+                except IndexError:
+                    top.color = RBNode.BLACK
+                    return
+
+        if cur.color == RBNode.RED:
+            fix(stack.pop())
 
         return node

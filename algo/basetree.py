@@ -306,3 +306,25 @@ class BaseTree:
         # print ascii graph
         def __repr__(self):
             return pretty_tree(self)
+
+
+def rotate_right(top):
+    """
+    :type top: BaseNode
+    """
+    assert top.left is not None
+    left = top.left
+    top.left = left.right
+    left.right = top
+    return left
+
+
+def rotate_left(top):
+    """
+    :type top: BaseNode
+    """
+    assert top.right is not None
+    right = top.right
+    top.right = right.left
+    right.left = top
+    return right
