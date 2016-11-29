@@ -225,7 +225,7 @@ def rbtree_from_nested_list(seq):
     return RBTree(root)
 
 
-def test_is_rbtree():
+def test_is_rbtree_root():
     R, B = RBNode.RED, RBNode.BLACK
     cases = (
         (True,  None),
@@ -262,7 +262,7 @@ def test_is_rbtree():
 
     for ans, ques in cases:
         tree = rbtree_from_nested_list(ques)
-        assert is_rbtree(tree.root) is ans
+        assert is_rbtree_root(tree.root) is ans
 
 
 def test_pretty_tree():
@@ -315,7 +315,7 @@ def test_rbtree_insert():
             t = tree.deepcopy()
             t.insert_data(num)
             assert t.count() == count + 1
-            assert is_rbtree(t.root)
+            assert is_rbtree_root(t.root)
             assert is_bstree(t.root)
             if len(nums) < max_len:
                 recur(t, count + 1)
@@ -334,6 +334,6 @@ if __name__ == '__main__':
     test_bst_remove_alt()
     test_bst_max_min()
 
-    test_is_rbtree()
+    test_is_rbtree_root()
     test_pretty_tree()
     test_rbtree_insert()

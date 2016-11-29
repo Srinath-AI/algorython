@@ -11,7 +11,7 @@ def rb_color_of(node):
         return node.color
 
 
-def is_rbtree(root):
+def is_rbtree_root(root):
     """
     :type root: RBNode
     """
