@@ -100,7 +100,7 @@ def test_is_bstree():
 
         with timed_test('is_bstree(*, iterator={})'.format(get_func_name(iterator))):
             for bst in gen_bst(4):
-                assert is_bstree_func(bst)
+                assert is_bstree_func(BSTree(bst))
 
             not_bst = (
                 [0, 1, 2],
@@ -109,7 +109,7 @@ def test_is_bstree():
             )
             for heap in not_bst:
                 tree = BaseTree.from_heap(heap)
-                assert not is_bstree_func(tree.root)
+                assert not is_bstree_func(tree)
 
 
 @timeit('BSTree::find_*()')
@@ -148,7 +148,7 @@ def test_bst_insert():
             count = tree.count()
             tree.insert(BSNode(num))
             assert tree.count() == count + 1
-            assert is_bstree(tree.root)
+            assert is_bstree(tree)
 
 
 @timeit('BSTree::remove_first()')
@@ -170,7 +170,7 @@ def test_bst_remove():
             tree = BSTree(root.deepcopy())
             assert tree.remove_first(num)
             assert tree.count() == count - 1
-            assert is_bstree(tree.root)
+            assert is_bstree(tree)
 
         for num in not_exist:
             tree = BSTree(root.deepcopy() if root else root)
@@ -334,15 +334,11 @@ def test_rbtree_insert():
     for tree, count in gen_rbtree_by_insert(7):
         assert tree.count() == count
         assert is_rbtree_root(tree.root)
-        assert is_bstree(tree.root)
+        assert is_bstree(tree)
 
 
 @timeit('RBTree::remove_data()')
 def test_rbtree_remove():
-    max_len = 7
-    nums = []
-    used = set()
-
     def removed_one(arr, el):
         arr = arr.copy()
         arr.remove(el)
@@ -360,7 +356,7 @@ def test_rbtree_remove():
             # print_tree(test_tree)
             assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
             assert is_rbtree_root(test_tree.root)
-            assert is_bstree(test_tree.root)
+            assert is_bstree(test_tree)
             # print()
 
         test_tree = t.deepcopy()

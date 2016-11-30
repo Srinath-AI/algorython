@@ -1,12 +1,12 @@
 from algo.basetree import BaseNode, middle_iter, BaseTree
 
 
-def is_bstree(root, iterator=middle_iter):
+def is_bstree(tree, iterator=middle_iter):
     """
-    :type root: BaseNode
+    :type tree: BaseTree
     """
     prev = None
-    for node in iterator(root):
+    for node in iterator(tree.root):
         if prev is not None:
             if node.data < prev.data:
                 return False
