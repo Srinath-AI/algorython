@@ -11,11 +11,11 @@ def rb_color_of(node):
         return node.color
 
 
-def is_rbtree_root(root):
+def is_rbtree(tree):
     """
-    :type root: RBNode
+    :type tree: RBTree
     """
-    if rb_color_of(root) == RBNode.RED:
+    if rb_color_of(tree.root) == RBNode.RED:
         return False    # root must be black
 
     class NotRBTree(Exception):
@@ -37,7 +37,7 @@ def is_rbtree_root(root):
         return lcount + int(node.color == RBNode.BLACK)
 
     try:
-        check(root)
+        check(tree.root)
     except NotRBTree:
         return False
     else:

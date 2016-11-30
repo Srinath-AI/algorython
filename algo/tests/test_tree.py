@@ -225,7 +225,7 @@ def rbtree_from_nested_list(seq):
     return RBTree(root)
 
 
-def test_is_rbtree_root():
+def test_is_rbtree():
     R, B = RBNode.RED, RBNode.BLACK
     cases = (
         (True,  None),
@@ -262,7 +262,7 @@ def test_is_rbtree_root():
 
     for ans, ques in cases:
         tree = rbtree_from_nested_list(ques)
-        assert is_rbtree_root(tree.root) is ans
+        assert is_rbtree(tree) is ans
 
 
 def test_pretty_tree():
@@ -333,7 +333,7 @@ def gen_rbtree_by_insert(max_len):
 def test_rbtree_insert():
     for tree, count in gen_rbtree_by_insert(7):
         assert tree.count() == count
-        assert is_rbtree_root(tree.root)
+        assert is_rbtree(tree)
         assert is_bstree(tree)
 
 
@@ -355,7 +355,7 @@ def test_rbtree_remove():
             assert removed_node.data == to_remove
             # print_tree(test_tree)
             assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
-            assert is_rbtree_root(test_tree.root)
+            assert is_rbtree(test_tree)
             assert is_bstree(test_tree)
             # print()
 
@@ -376,7 +376,7 @@ if __name__ == '__main__':
     test_bst_remove_alt()
     test_bst_max_min()
 
-    test_is_rbtree_root()
+    test_is_rbtree()
     test_pretty_tree()
     test_rbtree_insert()
     test_rbtree_remove()
