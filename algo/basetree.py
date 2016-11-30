@@ -253,6 +253,12 @@ class BaseTree:
     def count(self):
         return sum(1 for _ in self.node_iter())
 
+    def insert(self, data):
+        raise NotImplementedError
+
+    def remove(self, data):
+        raise NotImplementedError
+
     def to_tuple(self):
         def recur(node):
             if node is None:

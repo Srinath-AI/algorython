@@ -146,12 +146,12 @@ def test_bst_insert():
         for num in to_insert:
             tree = BSTree(root.deepcopy() if root else root)
             count = tree.count()
-            tree.insert(BSNode(num))
+            tree.insert(num)
             assert tree.count() == count + 1
             assert is_bstree(tree)
 
 
-@timeit('BSTree::remove_first()')
+@timeit('BSTree::remove()')
 def test_bst_remove():
     for root in gen_bst(4):
         tree = BSTree(root)
@@ -168,13 +168,13 @@ def test_bst_remove():
 
         for num in to_remove:
             tree = BSTree(root.deepcopy())
-            assert tree.remove_first(num)
+            assert tree.remove(num)
             assert tree.count() == count - 1
             assert is_bstree(tree)
 
         for num in not_exist:
             tree = BSTree(root.deepcopy() if root else root)
-            assert not tree.remove_first(num)
+            assert not tree.remove(num)
             assert tree.count() == count
 
 
@@ -284,7 +284,7 @@ NIL NIL    □2      □4
     assert process(output) == process(ans)
 
     tree = RBTree()
-    tree.insert_data(+8601010086)
+    tree.insert(+8601010086)
     ans = '''
 ■8601010086
    ┌─┴─┐
@@ -319,7 +319,7 @@ def gen_rbtree_by_insert(max_len):
             nums.append(num)
 
             t = tree.deepcopy()
-            t.insert_data(num)
+            t.insert(num)
             yield t, count
             if len(nums) < max_len:
                 yield from recur(t, count + 1)
@@ -351,7 +351,7 @@ def test_rbtree_remove():
             # print_tree(t)
             # print('remove', to_remove)
             test_tree = t.deepcopy()
-            removed_node = test_tree.remove_data(to_remove)
+            removed_node = test_tree.remove(to_remove)
             assert removed_node.data == to_remove
             # print_tree(test_tree)
             assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
@@ -360,8 +360,8 @@ def test_rbtree_remove():
             # print()
 
         test_tree = t.deepcopy()
-        assert test_tree.remove_data(min(flatten, default=0) - 1) is None
-        assert test_tree.remove_data(max(flatten, default=0) + 1) is None
+        assert test_tree.remove(min(flatten, default=0) - 1) is None
+        assert test_tree.remove(max(flatten, default=0) + 1) is None
 
     for tree, count in gen_rbtree_by_insert(7):
         test_remove(tree)

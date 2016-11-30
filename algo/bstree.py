@@ -120,10 +120,8 @@ class BSTree(BaseTree):
     __slots__ = ()
     node_type = BSNode
 
-    def insert(self, node):
-        """
-        :type node: BSNode
-        """
+    def insert(self, data):
+        node = self.node_type(data)
         if self.root is None:
             self.root = node
         else:
@@ -147,7 +145,7 @@ class BSTree(BaseTree):
                 else:
                     raise StopIteration
 
-    def remove_first(self, value):
+    def remove(self, value):
         if self.root is None:
             return False
 
@@ -161,9 +159,6 @@ class BSTree(BaseTree):
                 remove_from_parent(parent, child)
 
             return True
-
-    # def remove_at(self, node):
-    #     pass
 
     def min(self):
         if self.root is None:

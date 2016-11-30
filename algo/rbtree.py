@@ -70,7 +70,7 @@ class RBTree(BaseTree):
     def deepcopy(self):
         return RBTree(self.root.deepcopy() if self.root is not None else None)
 
-    def insert_data(self, data):
+    def insert(self, data):
         if self.root is None:
             self.root = self.node_type(data, RBNode.BLACK)
             return self.root
@@ -155,7 +155,7 @@ class RBTree(BaseTree):
 
         return node
 
-    def remove_data(self, data):
+    def remove(self, data):
         cur = self.root
         stack = [cur]
         while cur is not None and cur.data != data:
