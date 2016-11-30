@@ -294,13 +294,19 @@ NIL NIL    □2      □4
     assert process(output) == process(ans)
 
 
-@timeit('RBTree::insert_data()')
-def test_rbtree_insert():
-    max_len = 7
+def gen_rbtree_by_insert(max_len):
     nums = []
+    used = set()
 
     def recur(tree, count):
         nonlocal nums
+
+        # exclude duplicated case
+        key = tree.to_tuple()
+        if key in used:
+            return
+        else:
+            used.add(key)
 
         if not nums:
             new_nums = uniq_nums = [0]
@@ -314,15 +320,55 @@ def test_rbtree_insert():
 
             t = tree.deepcopy()
             t.insert_data(num)
-            assert t.count() == count + 1
-            assert is_rbtree_root(t.root)
-            assert is_bstree(t.root)
+            yield t, count
             if len(nums) < max_len:
-                recur(t, count + 1)
+                yield from recur(t, count + 1)
 
             nums.pop()
 
-    recur(RBTree(), 0)
+    yield from recur(RBTree(), 1)
+
+
+@timeit('RBTree::insert_data()')
+def test_rbtree_insert():
+    for tree, count in gen_rbtree_by_insert(7):
+        assert tree.count() == count
+        assert is_rbtree_root(tree.root)
+        assert is_bstree(tree.root)
+
+
+@timeit('RBTree::remove_data()')
+def test_rbtree_remove():
+    max_len = 7
+    nums = []
+    used = set()
+
+    def removed_one(arr, el):
+        arr = arr.copy()
+        arr.remove(el)
+        return arr
+
+    def test_remove(t):
+        flatten = list(t.data_iter())
+        for to_remove in sorted(set(flatten)):
+            # print('test tree')
+            # print_tree(t)
+            # print('remove', to_remove)
+            test_tree = t.deepcopy()
+            removed_node = test_tree.remove_data(to_remove)
+            assert removed_node.data == to_remove
+            # print_tree(test_tree)
+            assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
+            assert is_rbtree_root(test_tree.root)
+            assert is_bstree(test_tree.root)
+            # print()
+
+        test_tree = t.deepcopy()
+        assert test_tree.remove_data(min(flatten, default=0) - 1) is None
+        assert test_tree.remove_data(max(flatten, default=0) + 1) is None
+
+    for tree, count in gen_rbtree_by_insert(7):
+        test_remove(tree)
 
 
 if __name__ == '__main__':
@@ -337,3 +383,4 @@ if __name__ == '__main__':
     test_is_rbtree_root()
     test_pretty_tree()
     test_rbtree_insert()
+    test_rbtree_remove()

@@ -43,6 +43,9 @@ class BaseNode:
 
         return node
 
+    def _extra_attr(self):
+        return None
+
 
 def pretty_tree(tree):
     """
@@ -249,6 +252,15 @@ class BaseTree:
 
     def count(self):
         return sum(1 for _ in self.node_iter())
+
+    def to_tuple(self):
+        def recur(node):
+            if node is None:
+                return None
+            else:
+                return node.data, node._extra_attr(), recur(node.left), recur(node.right)
+
+        return recur(self.root)
 
     # for ipython
     def _repr_svg_(self):
