@@ -288,19 +288,16 @@ class BaseTree:
         serial_gen = map(lambda x: 'N_{}'.format(x), itertools.count())
 
         def get_node_option(node):
-            base = dict()
             if hasattr(node, 'color'):
                 from algo.rbtree import RBNode
                 if node.color == RBNode.RED:
-                    base.update(color='red')
+                    return dict(color='red')
                 else:
-                    base.update(color='black', fontcolor='white')
+                    return dict(color='black', fontcolor='white')
             elif node is None:
-                base.update(color='black', fontcolor='white')
+                return dict(color='black', fontcolor='white')
             else:
-                pass
-
-            return base
+                return dict()
 
         def sub(node, parent=None):
             name = next(serial_gen)
