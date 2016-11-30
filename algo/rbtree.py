@@ -229,7 +229,7 @@ class RBTree(BaseTree):
                 #   2 2 1   1          2   B          2   B
                 #                         / \            / \
                 #                        1   1          1   1
-                assert rb_color_of(node.right.left) != rb_color_of(node.right.right) ==  RBNode.BLACK
+                assert rb_color_of(node.right.left) != rb_color_of(node.right.right) == RBNode.BLACK
                 node.right = rotate_right(node.right)
                 node.right.color = RBNode.BLACK
                 node.right.right.color = RBNode.RED
@@ -264,7 +264,7 @@ class RBTree(BaseTree):
                 top.color = top.right.color
                 top.right.color = top.left.color = RBNode.BLACK
             else:
-                assert rb_color_of(node.left.right) != rb_color_of(node.left.left) ==  RBNode.BLACK
+                assert rb_color_of(node.left.right) != rb_color_of(node.left.left) == RBNode.BLACK
                 node.left = rotate_left(node.left)
                 node.left.color = RBNode.BLACK
                 node.left.left.color = RBNode.RED
@@ -282,21 +282,21 @@ class RBTree(BaseTree):
                     p.right = new_top
 
         if target.right is None or target.right is None:
-            new_top = target.left or target.right
-            set_top(target, new_top)
+            child = target.left or target.right
+            set_top(target, child)
             if target.color == RBNode.BLACK:
                 try:
-                    p = stack.pop()
+                    parent = stack.pop()
                 except IndexError:
                     # target is root
                     if self.root is not None:
                         self.root.color = RBNode.BLACK
                 else:
-                    if new_top is p.left:
-                        fix_left(p)
+                    if child is parent.left:
+                        fix_left(parent)
                     else:
-                        assert new_top is p.right
-                        fix_right(p)
+                        assert child is parent.right
+                        fix_right(parent)
         else:
             stack2 = [cur]
             cur = cur.right
@@ -305,7 +305,7 @@ class RBTree(BaseTree):
                 cur = cur.left
             cur = stack2.pop()
             stack2[0] = cur     # replace target
-            p = stack2.pop()
+            parent = stack2.pop()
             need_fix = cur.color == RBNode.BLACK
 
             if cur is target.right:
@@ -316,15 +316,15 @@ class RBTree(BaseTree):
                     stack.extend(stack2)
                     fix_right(cur)
             else:
-                assert p.left is cur
-                p.left = cur.right
+                assert parent.left is cur
+                parent.left = cur.right
                 cur.left = target.left
                 cur.right = target.right
                 cur.color = target.color
                 set_top(target, cur)
                 if need_fix:
                     stack.extend(stack2)
-                    fix_left(p)
+                    fix_left(parent)
 
         target.left = target.right = None
         return target
