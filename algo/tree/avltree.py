@@ -92,16 +92,38 @@ class AVLTree(BaseTree):
 
             if node is p.left:
                 if avl_height_of(node.left) < avl_height_of(node.right):
+                    #       p             p
+                    #      / \           / \
+                    # (n) *   ?     (n) *   ?
+                    #    / \           / \
+                    #   2   *   ==>   *   2
+                    #      / \       / \
+                    #     1   2     2   1
                     p.left = node = avl_rotate_left(p.left)
                 assert avl_height_of(node.left) > avl_height_of(node.right)
 
                 left_height, right_height = avl_height_of(p.left), avl_height_of(p.right)
                 if left_height == right_height:
+                    #     p
+                    #    / \
+                    #   n   3
+                    #  / \
+                    # 2   1
                     return
                 elif left_height == right_height + 1:
+                    #     p
+                    #    / \
+                    #   n   2
+                    #  / \
+                    # 2   1
                     p.height += 1
                     fix(p)
                 else:
+                    #     p           n
+                    #    / \         / \
+                    #   n   1  ==>  2   p
+                    #  / \             / \
+                    # 2   1           1   1
                     assert left_height == right_height + 2
                     assert avl_height_of(node.left) \
                         == avl_height_of(node.right) + 1 \
