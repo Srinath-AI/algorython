@@ -15,7 +15,7 @@ def is_avltree(tree):
     """
     :type tree: AVLTree
     """
-    def check(node):
+    def check(node, parent):
         height = avl_height_of(node)
         if height == 0:
             return True
@@ -27,9 +27,18 @@ def is_avltree(tree):
         if max(l, r) + 1 != height:
             return False
 
-        return check(node.left) and check(node.right)
+        if parent is not None:
+            if node is parent.left:
+                if r > l:
+                    return False
+            else:
+                assert node is parent.right
+                if l > r:
+                    return False
 
-    return check(tree.root)
+        return check(node.left, node) and check(node.right, node)
+
+    return check(tree.root, None)
 
 
 def avl_rotate_left(node):
