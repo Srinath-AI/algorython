@@ -242,6 +242,9 @@ class BaseTree:
         tree.root = cls.node_type.from_heap(heap)
         return tree
 
+    def deepcopy(self):
+        return self.__class__(self.root.deepcopy() if self.root is not None else None)
+
     def node_iter(self):
         if self.root is not None:
             yield from middle_iter(self.root)

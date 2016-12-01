@@ -67,9 +67,6 @@ class RBTree(BaseTree):
     __slots__ = ()
     node_type = RBNode
 
-    def deepcopy(self):
-        return RBTree(self.root.deepcopy() if self.root is not None else None)
-
     def insert(self, data):
         if self.root is None:
             self.root = self.node_type(data, RBNode.BLACK)
