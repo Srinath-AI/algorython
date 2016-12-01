@@ -18,7 +18,7 @@ def is_bstree(tree, iterator=middle_iter):
 class BSNode(BaseNode):
     __slots__ = ()
 
-    def insert(self, node):
+    def insert_node(self, node):
         """
         :type node: BSNode
         """
@@ -37,18 +37,14 @@ class BSNode(BaseNode):
                 else:
                     cur = cur.right
 
-    def find_first_with_parent(self, value):
+    def find_first(self, data):
         cur, parent = self, None
-        while cur is not None and value != cur.data:
-            if value < cur.data:
+        while cur is not None and data != cur.data:
+            if data < cur.data:
                 cur, parent = cur.left, cur
             else:
                 cur, parent = cur.right, cur
-        else:
-            return cur, parent
 
-    def find_first(self, value):
-        cur, parent = self.find_first_with_parent(value)
         return cur
 
 
@@ -61,23 +57,23 @@ class BSTree(BaseTree):
         if self.root is None:
             self.root = node
         else:
-            self.root.insert(node)
+            self.root.insert_node(node)
 
-    def find_first(self, value):
+    def find_first(self, data):
         if self.root is None:
             return None
         else:
-            return self.root.find_first(value)
+            return self.root.find_first(data)
 
-    def find_all(self, value):
+    def find_all(self, data):
         if self.root is None:
             raise StopIteration
         else:
-            ans = self.root.find_first(value)
+            ans = self.root.find_first(data)
             while ans is not None:
                 yield ans
                 if ans.right is not None:
-                    ans = ans.right.find_first(value)
+                    ans = ans.right.find_first(data)
                 else:
                     raise StopIteration
 
