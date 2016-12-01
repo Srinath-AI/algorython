@@ -38,12 +38,12 @@ class BSNode(BaseNode):
                     cur = cur.right
 
     def find_first(self, data):
-        cur, parent = self, None
+        cur = self
         while cur is not None and data != cur.data:
             if data < cur.data:
-                cur, parent = cur.left, cur
+                cur = cur.left
             else:
-                cur, parent = cur.right, cur
+                cur = cur.right
 
         return cur
 
