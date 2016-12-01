@@ -290,7 +290,7 @@ class BaseTree:
 
     # for ipython
     def _repr_svg_(self):
-        return self._to_graphviz(self)._repr_svg_()
+        return self._to_graphviz()._repr_svg_()
 
     def _to_graphviz(self, graph_param=None):
         import graphviz
