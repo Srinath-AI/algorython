@@ -59,9 +59,6 @@ class RBNode(BaseNode):
         ret.color = self.color
         return ret
 
-    def _extra_attr(self):
-        return (self.color,)
-
 
 class RBTree(BaseTree):
     __slots__ = ()

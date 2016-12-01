@@ -43,9 +43,6 @@ class BaseNode:
 
         return node
 
-    def _extra_attr(self):
-        return None
-
 
 def pretty_tree(tree):
     """
@@ -278,15 +275,6 @@ class BaseTree:
         else:
             assert old is parent.right
             parent.right = new
-
-    def to_tuple(self):
-        def recur(node):
-            if node is None:
-                return None
-            else:
-                return node.data, node._extra_attr(), recur(node.left), recur(node.right)
-
-        return recur(self.root)
 
     # for ipython
     def _repr_svg_(self):

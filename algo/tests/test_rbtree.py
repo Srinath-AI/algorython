@@ -106,11 +106,29 @@ def gen_rbtree_by_insert(max_len):
     nums = []
     used = set()
 
+    def rbtree_to_key(tree):
+        serial = 0
+        prev = None
+
+        def node_to_key(node):
+            nonlocal serial, prev
+
+            if node is None:
+                return None
+
+            left = node_to_key(node.left)
+            if prev and node.data != prev.data:
+                serial += 1
+            prev = node
+            return serial, node.color, left, node_to_key(node.right)
+
+        return node_to_key(tree.root)
+
     def recur(tree, count):
         nonlocal nums
 
         # exclude duplicated case
-        key = tree.to_tuple()
+        key = rbtree_to_key(tree)
         if key in used:
             return
         else:
@@ -139,10 +157,14 @@ def gen_rbtree_by_insert(max_len):
 
 @timeit('RBTree::insert()')
 def test_rbtree_insert():
-    for tree, count in gen_rbtree_by_insert(7):
+    tree_count = 0
+    for tree, count in gen_rbtree_by_insert(8):
         assert tree.count() == count
         assert is_rbtree(tree)
         assert is_bstree(tree)
+        tree_count += 1
+
+    print('tree_count', tree_count)
 
 
 @timeit('RBTree::remove()')
@@ -166,5 +188,5 @@ def test_rbtree_remove():
         assert test_tree.remove(min(flatten, default=0) - 1) is None
         assert test_tree.remove(max(flatten, default=0) + 1) is None
 
-    for tree, count in gen_rbtree_by_insert(7):
+    for tree, count in gen_rbtree_by_insert(8):
         test_remove(tree)
