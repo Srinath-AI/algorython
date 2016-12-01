@@ -41,14 +41,23 @@ def is_avltree(tree):
     return check(tree.root, None)
 
 
+def avl_reheight(node):
+    """
+    :type node: AVLNode
+    """
+    node.height = 1 + max(
+        avl_height_of(node.right),
+        avl_height_of(node.left))
+
+
 def avl_rotate_left(node):
     """
     :type node: AVLNode
     """
     assert avl_height_of(node.right) > avl_height_of(node.left)
     node = rotate_left(node)
-    node.left.height = max(avl_height_of(node.left.right), avl_height_of(node.left.left)) + 1
-    node.height = max(avl_height_of(node.right), avl_height_of(node.left)) + 1
+    avl_reheight(node.left)
+    avl_reheight(node)
     return node
 
 
@@ -58,8 +67,8 @@ def avl_rotate_right(node):
     """
     assert avl_height_of(node.left) > avl_height_of(node.right)
     node = rotate_right(node)
-    node.right.height = max(avl_height_of(node.right.left), avl_height_of(node.right.right)) + 1
-    node.height = max(avl_height_of(node.left), avl_height_of(node.right)) + 1
+    avl_reheight(node.right)
+    avl_reheight(node)
     return node
 
 
