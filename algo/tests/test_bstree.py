@@ -1,8 +1,7 @@
 from collections import Counter
 from functools import partial
 
-from algo.tests.utils import timed_test, get_func_name, timeit
-from algo.tests.test_tree import gen_bst
+from algo.tests.utils import timed_test, get_func_name, timeit, gen_bst
 from algo.tree.basetree import BaseTree, middle_iter, middle_iter_bystack, middle_iter_sm
 from algo.tree.bstree import BSTree, is_bstree
 

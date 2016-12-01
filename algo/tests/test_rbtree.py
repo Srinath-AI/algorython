@@ -1,6 +1,4 @@
-from itertools import chain
-
-from algo.tests.utils import timeit
+from algo.tests.utils import timeit, gen_bstree_by_insert
 from algo.tree.basetree import pretty_tree
 from algo.tree.bstree import is_bstree
 from algo.tree.rbtree import RBTree, RBNode, is_rbtree
@@ -103,56 +101,7 @@ NIL NIL    □2      □4
 
 
 def gen_rbtree_by_insert(max_len):
-    nums = []
-    used = set()
-
-    def rbtree_to_key(tree):
-        serial = 0
-        prev = None
-
-        def node_to_key(node):
-            nonlocal serial, prev
-
-            if node is None:
-                return None
-
-            left = node_to_key(node.left)
-            if prev and node.data != prev.data:
-                serial += 1
-            prev = node
-            return serial, node.color, left, node_to_key(node.right)
-
-        return node_to_key(tree.root)
-
-    def recur(tree, count):
-        nonlocal nums
-
-        # exclude duplicated case
-        key = rbtree_to_key(tree)
-        if key in used:
-            return
-        else:
-            used.add(key)
-
-        if not nums:
-            new_nums = uniq_nums = [0]
-        else:
-            uniq_nums = sorted(set(nums))
-            new_nums = [ (uniq_nums[i] + uniq_nums[i + 1]) / 2 for i in range(len(uniq_nums) - 1) ]
-            new_nums.extend([min(nums) - 1, max(nums) + 1])
-
-        for num in chain(new_nums, uniq_nums):
-            nums.append(num)
-
-            t = tree.deepcopy()
-            t.insert(num)
-            yield t, count
-            if len(nums) < max_len:
-                yield from recur(t, count + 1)
-
-            nums.pop()
-
-    yield from recur(RBTree(), 1)
+    yield from gen_bstree_by_insert(max_len, RBTree, lambda node: node.color)
 
 
 @timeit('RBTree::insert()')

@@ -5,6 +5,9 @@ from contextlib import contextmanager
 from time import perf_counter
 import functools
 
+from algo.heap import heap_left, heap_right
+from algo.tree.bstree import BSNode
+
 
 def asc_seq(maxlen):
     # %timeit -n 1000 list(map(list, asc_seq(10)))
@@ -252,3 +255,130 @@ def timeit(name, test_name=''):
         return wrapped
 
     return decorator
+
+
+def bstree_to_key(tree, extra_attr=lambda node: None):
+    serial = 0
+    prev = None
+
+    def node_to_key(node):
+        nonlocal serial, prev
+
+        if node is None:
+            return None
+
+        left = node_to_key(node.left)
+        if prev and node.data != prev.data:
+            serial += 1
+        prev = node
+        return serial, extra_attr(node), left, node_to_key(node.right)
+
+    return node_to_key(tree.root)
+
+
+def gen_bstree_by_insert(max_len, tree_type, extra_attr):
+    nums = []
+    used = set()
+
+    def recur(tree, count):
+        nonlocal nums
+
+        # exclude duplicated case
+        key = bstree_to_key(tree, extra_attr)
+        if key in used:
+            return
+        else:
+            used.add(key)
+
+        if not nums:
+            new_nums = uniq_nums = [0]
+        else:
+            uniq_nums = sorted(set(nums))
+            new_nums = [ (uniq_nums[i] + uniq_nums[i + 1]) / 2 for i in range(len(uniq_nums) - 1) ]
+            new_nums.extend([min(nums) - 1, max(nums) + 1])
+
+        for num in chain(new_nums, uniq_nums):
+            nums.append(num)
+
+            t = tree.deepcopy()
+            t.insert(num)
+            yield t, count
+            if len(nums) < max_len:
+                yield from recur(t, count + 1)
+
+            nums.pop()
+
+    yield from recur(tree_type(), 1)
+
+
+def gen_tree_shape(max_level):
+    # %time list(map(list, gen_tree_shape(5)))
+    # Wall time: 1.5-1.8 s
+
+    size = 2 ** max_level - 1
+    heap = [False] * size
+
+    def g(root):
+        yield heap
+        if root > size:
+            return
+
+        heap[root] = True
+
+        left, right = heap_left(root), heap_right(root)
+        if right < size:
+            for _ in g(left):
+                yield from g(right)
+        elif left < size:
+            yield from g(left)
+        else:
+            yield heap
+
+        heap[root] = False
+
+    yield from g(0)
+
+
+def gen_tree(level, node_type=BSNode):
+    def tree_from_shape(shape, root=0):
+        if not shape[root]:
+            return None
+        else:
+            node = node_type(None)
+            if heap_left(root) < len(shape):
+                node.left = tree_from_shape(shape, heap_left(root))
+            if heap_right(root) < len(shape):
+                node.right = tree_from_shape(shape, heap_right(root))
+
+            return node
+
+    for shape in gen_tree_shape(level):
+        yield tree_from_shape(shape)
+
+
+def gen_bst_from_tree(root, data=0, lo=None, hi=None):
+    if root is None:
+        yield root
+        raise StopIteration
+
+    root.data = data
+
+    def gen_right():
+        if root.right is not None:
+            if root.right is not None and root.right.left is None:
+                for _ in gen_bst_from_tree(root.right, data, lo=data, hi=hi):
+                    yield root
+            delta = 1 if hi is None else (hi - data) / 2
+            for _ in gen_bst_from_tree(root.right, data + delta, lo=data, hi=hi):
+                yield root
+        else:
+            yield root
+
+    delta = -1 if lo is None else (lo - data) / 2
+    for _ in gen_bst_from_tree(root.left, data + delta, hi=data, lo=lo):
+        yield from gen_right()
+
+
+def gen_bst(level):
+    for t in gen_tree(level):
+        yield from gen_bst_from_tree(t)
