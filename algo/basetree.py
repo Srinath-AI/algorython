@@ -259,6 +259,23 @@ class BaseTree:
     def remove(self, data):
         raise NotImplementedError
 
+    def set_child(self, old, new, stack=None, parent=None):
+        if stack is not None:
+            assert parent is None
+            try:
+                parent = stack[-1]
+            except IndexError:
+                parent = None
+
+        if parent is None:
+            assert old is self.root
+            self.root = new
+        elif old is parent.left:
+            parent.left = new
+        else:
+            assert old is parent.right
+            parent.right = new
+
     def to_tuple(self):
         def recur(node):
             if node is None:

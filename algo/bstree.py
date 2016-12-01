@@ -92,20 +92,14 @@ class BSTree(BaseTree):
         if cur is None:
             return None
 
-        def set_top(old, new, parent):
-            if parent is None:
-                assert old is self.root
-                self.root = new
-            elif old is parent.left:
-                parent.left = new
-            else:
-                parent.right = new
+        def set_top(old, new):
+            return self.set_child(old, new, parent=target_parent)
 
         target, target_parent = cur, parent
         if target.left is None:
-            set_top(target, target.right, target_parent)
+            set_top(target, target.right)
         elif target.right is None:
-            set_top(target, target.left, target_parent)
+            set_top(target, target.left)
         else:
             cur, parent, pp = target.right.left, target.right, target
             while cur is not None:
@@ -118,7 +112,7 @@ class BSTree(BaseTree):
                 parent.left = cur.right
                 cur.left, cur.right = target.left, target.right
 
-            set_top(target, cur, target_parent)
+            set_top(target, cur)
 
         target.left = target.right = None
         return target

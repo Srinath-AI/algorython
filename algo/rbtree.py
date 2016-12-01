@@ -91,17 +91,6 @@ class RBTree(BaseTree):
         else:
             cur.right = node
 
-        def set_top(old_top, new_top):
-            try:
-                p = stack[-1]
-            except IndexError:
-                self.root = new_top
-            else:
-                if old_top is p.left:
-                    p.left = new_top
-                else:
-                    p.right = new_top
-
         def fix(red):
             assert red.color == RBNode.RED
             while red.color == RBNode.RED:
@@ -142,7 +131,7 @@ class RBTree(BaseTree):
                         top.right.color = RBNode.BLACK
 
                 assert top.color == RBNode.RED
-                set_top(p, top)
+                self.set_child(p, top, stack=stack)
 
                 try:
                     red = stack.pop()   # recursion
@@ -270,16 +259,8 @@ class RBTree(BaseTree):
                 node.left.left.color = RBNode.RED
                 fix_right(node)
 
-        def set_top(old_top, new_top):
-            try:
-                p = stack[-1]
-            except IndexError:
-                self.root = new_top
-            else:
-                if old_top is p.left:
-                    p.left = new_top
-                else:
-                    p.right = new_top
+        def set_top(old, new):
+            return self.set_child(old, new, stack=stack)
 
         if target.right is None or target.right is None:
             child = target.left or target.right
