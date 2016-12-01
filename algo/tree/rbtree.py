@@ -1,4 +1,4 @@
-from algo.basetree import BaseNode, BaseTree, rotate_left, rotate_right
+from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
 
 
 def rb_color_of(node):

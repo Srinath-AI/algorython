@@ -58,7 +58,7 @@ def pretty_tree(tree):
         formated = repr(node.data)
 
         if hasattr(node, 'color'):
-            from algo.rbtree import RBNode
+            from algo.tree.rbtree import RBNode
             dot = {RBNode.BLACK: '■', RBNode.RED: '□'}[node.color]
             formated = dot + formated
         else:
@@ -309,7 +309,7 @@ class BaseTree:
 
         def get_node_option(node):
             if hasattr(node, 'color'):
-                from algo.rbtree import RBNode
+                from algo.tree.rbtree import RBNode
                 if node.color == RBNode.RED:
                     return dict(color='red')
                 else:

@@ -1,4 +1,4 @@
-from algo.basetree import BaseNode, middle_iter, BaseTree
+from algo.tree.basetree import BaseNode, middle_iter, BaseTree
 
 
 def is_bstree(tree, iterator=middle_iter):

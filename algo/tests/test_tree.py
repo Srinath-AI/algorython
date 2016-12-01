@@ -2,9 +2,9 @@ from collections import Counter
 from functools import partial
 from itertools import chain
 
-from algo.basetree import *
-from algo.bstree import *
-from algo.rbtree import *
+from algo.tree.basetree import *
+from algo.tree.bstree import *
+from algo.tree.rbtree import *
 from algo.heap import heap_left, heap_right
 from algo.tests.utils import get_func_name, timed_test, timeit
 
