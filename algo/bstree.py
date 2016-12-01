@@ -15,13 +15,6 @@ def is_bstree(tree, iterator=middle_iter):
         return True
 
 
-def remove_from_parent(parent, child):
-    if child is parent.left:
-        parent.left = child.remove_self()
-    else:
-        parent.right = child.remove_self()
-
-
 class BSNode(BaseNode):
     __slots__ = ()
 
@@ -58,63 +51,6 @@ class BSNode(BaseNode):
         cur, parent = self.find_first_with_parent(value)
         return cur
 
-    def remove_self(self):
-        if self.left is self.right is None:
-            return None
-
-        if self.left is not None and self.right is not None:
-            removed, right = self.right.remove_left_most()
-            removed.right = right
-            removed.left = self.left
-
-            return removed
-        else:   # just one child
-            if self.left is not None:
-                return self.left
-            else:
-                return self.right
-
-    def remove_self_alt(self):
-        # alternate implementation of remove_self()
-
-        if self.left is self.right is None:
-            return None
-
-        if self.left is not None:
-            removed, left = self.left.remove_right_most()
-            removed.left = left
-            removed.right = self.right
-
-            return removed
-        else:
-            removed, right = self.right.remove_left_most()
-            removed.right = right
-            removed.left = self.left
-
-            return removed
-
-    def remove_right_most(self):
-        if self.right is None:
-            return self, self.remove_self()
-
-        p, c = self, self.right
-        while c.right is not None:
-            p, c = c, c.right
-
-        p.right = c.remove_self()
-        return c, self
-
-    def remove_left_most(self):
-        if self.left is None:
-            return self, self.remove_self()
-
-        p, c = self, self.left
-        while c.left is not None:
-            p, c = c, c.left
-
-        p.left = c.remove_self()    # no recursion here since c has only one child
-        return c, self
-
 
 class BSTree(BaseTree):
     __slots__ = ()
@@ -145,20 +81,47 @@ class BSTree(BaseTree):
                 else:
                     raise StopIteration
 
-    def remove(self, value):
-        if self.root is None:
-            return False
-
-        child, parent = self.root.find_first_with_parent(value)
-        if child is None:
-            return False
-        else:
-            if parent is None:
-                self.root = child.remove_self()
+    def remove(self, data):
+        cur, parent, pp = self.root, None, None
+        while cur is not None and cur.data != data:
+            if data < cur.data:
+                cur, parent, pp = cur.left, cur, parent
             else:
-                remove_from_parent(parent, child)
+                cur, parent, pp = cur.right, cur, parent
 
-            return True
+        if cur is None:
+            return None
+
+        def set_top(old, new, parent):
+            if parent is None:
+                assert old is self.root
+                self.root = new
+            elif old is parent.left:
+                parent.left = new
+            else:
+                parent.right = new
+
+        target, target_parent = cur, parent
+        if target.left is None:
+            set_top(target, target.right, target_parent)
+        elif target.right is None:
+            set_top(target, target.left, target_parent)
+        else:
+            cur, parent, pp = target.right.left, target.right, target
+            while cur is not None:
+                cur, parent, pp = cur.left, cur, parent
+            cur, parent = parent, pp
+
+            if cur is target.right:
+                cur.left = target.left
+            else:
+                parent.left = cur.right
+                cur.left, cur.right = target.left, target.right
+
+            set_top(target, cur, target_parent)
+
+        target.left = target.right = None
+        return target
 
     def min(self):
         if self.root is None:

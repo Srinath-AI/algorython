@@ -168,7 +168,7 @@ def test_bst_remove():
 
         for num in to_remove:
             tree = BSTree(root.deepcopy())
-            assert tree.remove(num)
+            assert tree.remove(num).data == num
             assert tree.count() == count - 1
             assert is_bstree(tree)
 
@@ -176,14 +176,6 @@ def test_bst_remove():
             tree = BSTree(root.deepcopy() if root else root)
             assert not tree.remove(num)
             assert tree.count() == count
-
-
-def test_bst_remove_alt():
-    orgin = BSNode.remove_self
-    BSNode.remove_self = BSNode.remove_self_alt
-    print('!!! use alternative implementation of node removal. !!!')
-    test_bst_remove()
-    BSNode.remove_self = orgin
 
 
 @timeit('BSTree::min() & BSTree::max()')
@@ -329,7 +321,7 @@ def gen_rbtree_by_insert(max_len):
     yield from recur(RBTree(), 1)
 
 
-@timeit('RBTree::insert_data()')
+@timeit('RBTree::insert()')
 def test_rbtree_insert():
     for tree, count in gen_rbtree_by_insert(7):
         assert tree.count() == count
@@ -337,7 +329,7 @@ def test_rbtree_insert():
         assert is_bstree(tree)
 
 
-@timeit('RBTree::remove_data()')
+@timeit('RBTree::remove()')
 def test_rbtree_remove():
     def removed_one(arr, el):
         arr = arr.copy()
@@ -347,17 +339,12 @@ def test_rbtree_remove():
     def test_remove(t):
         flatten = list(t.data_iter())
         for to_remove in sorted(set(flatten)):
-            # print('test tree')
-            # print_tree(t)
-            # print('remove', to_remove)
             test_tree = t.deepcopy()
             removed_node = test_tree.remove(to_remove)
             assert removed_node.data == to_remove
-            # print_tree(test_tree)
             assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
             assert is_rbtree(test_tree)
             assert is_bstree(test_tree)
-            # print()
 
         test_tree = t.deepcopy()
         assert test_tree.remove(min(flatten, default=0) - 1) is None
@@ -373,7 +360,6 @@ if __name__ == '__main__':
     test_bst_find()
     test_bst_insert()
     test_bst_remove()
-    test_bst_remove_alt()
     test_bst_max_min()
 
     test_is_rbtree()
