@@ -16,7 +16,7 @@ class BaseNode:
             data=self.data,
         )
 
-    def _node_repr_(self):
+    def _short_repr_(self):
         return '[{}]'.format(self.data)
 
     @classmethod
@@ -85,7 +85,7 @@ def pretty_tree(tree):
             jbox.append(line1 + ' ' + line2)
 
         # data of parent node
-        data_line = node._node_repr_()
+        data_line = node._short_repr_()
         assert len(data_line) >= 1
         center = (len(data_line) + 1) // 2 - 1
 

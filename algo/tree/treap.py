@@ -32,7 +32,7 @@ class TreapNode(BaseNode):
         ret.priority = self.priority
         return ret
 
-    def _node_repr_(self):
+    def _short_repr_(self):
         return '{self.data}|p={self.priority:.3}'.format_map(locals())
 
 

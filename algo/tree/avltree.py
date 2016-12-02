@@ -104,7 +104,7 @@ class AVLNode(BaseNode):
         ret.height = self.height
         return ret
 
-    def _node_repr_(self):
+    def _short_repr_(self):
         return '{self.data}|h={self.height}'.format_map(locals())
 
 

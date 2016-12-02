@@ -59,7 +59,7 @@ class RBNode(BaseNode):
         ret.color = self.color
         return ret
 
-    def _node_repr_(self):
+    def _short_repr_(self):
         dot = { RBNode.BLACK: '■', RBNode.RED: '□' }[self.color]
         return '{dot}{self.data}'.format_map(locals())
 
