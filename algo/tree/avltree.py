@@ -72,6 +72,26 @@ def avl_rotate_right(node):
     return node
 
 
+def avl_adjust_direction(node, parent):
+    if parent is None or node is None:
+        return node
+
+    left_h, right_h = avl_height_of(node.left), avl_height_of(node.right)
+    if left_h > right_h:
+        assert left_h == right_h + 1
+        if node is parent.right:
+            return avl_rotate_right(node)
+        else:
+            assert node is parent.left
+    elif left_h < right_h:
+        assert left_h + 1 == right_h
+        if node is parent.left:
+            return avl_rotate_left(node)
+        else:
+            assert node is parent.right
+    return node
+
+
 class AVLNode(BaseNode):
     __slots__ = ('height',)
 
@@ -180,3 +200,89 @@ class AVLTree(BaseTree):
             fix(cur)
 
         return new_node
+
+    def remove(self, data):
+        cur = self.root
+        stack = [cur]
+        while cur is not None and cur.data != data:
+            if data < cur.data:
+                cur = cur.left
+            else:
+                cur = cur.right
+            stack.append(cur)
+        stack.pop()     # pop cur
+
+        if cur is None:
+            return None
+
+        target = cur
+        target_idx = len(stack)
+        try:
+            target_parent = stack[-1]
+        except IndexError:
+            target_parent = None
+
+        def fix_child(node):
+            try:
+                p = stack.pop()
+            except IndexError:
+                p = None
+
+            left_h, right_h = avl_height_of(node.left), avl_height_of(node.right)
+            delta = max(left_h, right_h) - min(left_h, right_h)
+            if delta == 0:
+                avl_reheight(node)  # node may be reheighted already
+                if p is not None:
+                    fix_child(p)
+            elif delta == 1:
+                self.set_child(node, avl_adjust_direction(node, p), parent=p)
+            elif delta == 2:
+                origin_height = node.height
+
+                if left_h < right_h:
+                    top1 = avl_rotate_left(node)
+                    top1.left.right = avl_adjust_direction(top1.left.right, top1.left)
+                    top1.left = avl_adjust_direction(top1.left, top1)
+                else:
+                    top1 = avl_rotate_right(node)
+                    top1.right.left = avl_adjust_direction(top1.right.left, top1.right)
+                    top1.right = avl_adjust_direction(top1.right, top1)
+
+                self.set_child(node, top1, parent=p)
+                top2 = avl_adjust_direction(top1, p)
+                self.set_child(top1, top2, parent=p)
+                if top2.height < origin_height:
+                    assert top2.height + 1 == origin_height
+                    if p is not None:
+                        fix_child(p)
+            else:
+                assert False
+
+        if target.right is None or target.right is None:
+            self.set_child(target, target.left or target.right, parent=target_parent)
+            if target_parent is not None:
+                stack.pop()
+                fix_child(target_parent)
+        else:
+            stack.append(None)
+            cur = target.right
+            while cur is not None:
+                stack.append(cur)
+                cur = cur.left
+            cur = stack.pop()
+            assert stack[target_idx] is None
+            stack[target_idx] = cur
+            p = stack.pop()
+
+            if cur is target.right:
+                cur.left = target.left
+            else:
+                p.left = cur.right
+                cur.left, cur.right = target.left, target.right
+
+            avl_reheight(cur)   # cur may be p
+            self.set_child(target, cur, parent=target_parent)
+            fix_child(p)
+
+        target.left = target.right = None
+        return target

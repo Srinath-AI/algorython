@@ -54,10 +54,12 @@ def pretty_tree(tree):
     def fmt_data(node):
         formated = repr(node.data)
 
-        if hasattr(node, 'color'):
+        if hasattr(node, 'color'):      # for rbtree
             from algo.tree.rbtree import RBNode
             dot = {RBNode.BLACK: '■', RBNode.RED: '□'}[node.color]
             formated = dot + formated
+        elif hasattr(node, 'height'):   # for avltree
+            formated = '{}|h={}'.format(formated, node.height)
         else:
             formated = '[{}]'.format(formated)
         return formated

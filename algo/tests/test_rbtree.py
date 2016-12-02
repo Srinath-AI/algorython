@@ -107,13 +107,14 @@ def gen_rbtree_by_insert(max_len):
 @timeit('RBTree::insert()')
 def test_rbtree_insert():
     tree_count = 0
-    for tree, count in gen_rbtree_by_insert(8):
+    maxsize = 8
+    for tree, count in gen_rbtree_by_insert(maxsize):
         assert tree.count() == count
         assert is_rbtree(tree)
         assert is_bstree(tree)
         tree_count += 1
 
-    print('tree_count', tree_count)
+    print('tree_count', tree_count, 'maxsize', maxsize)
 
 
 @timeit('RBTree::remove()')
