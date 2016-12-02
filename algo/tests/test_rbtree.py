@@ -1,6 +1,5 @@
-from algo.tests.utils import timeit, gen_bstree_by_insert
+from algo.tests.utils import gen_bstree_by_insert, run_bstree_insert_test, run_bstree_remove_test
 from algo.tree.basetree import pretty_tree
-from algo.tree.bstree import is_bstree
 from algo.tree.rbtree import RBTree, RBNode, is_rbtree
 
 
@@ -104,39 +103,9 @@ def gen_rbtree_by_insert(max_len):
     yield from gen_bstree_by_insert(max_len, RBTree, lambda node: node.color)
 
 
-@timeit('RBTree::insert()')
 def test_rbtree_insert():
-    tree_count = 0
-    maxsize = 8
-    for tree, count in gen_rbtree_by_insert(maxsize):
-        assert tree.count() == count
-        assert is_rbtree(tree)
-        assert is_bstree(tree)
-        tree_count += 1
-
-    print('tree_count', tree_count, 'maxsize', maxsize)
+    run_bstree_insert_test(8, gen_rbtree_by_insert, is_rbtree, 'RBTree::insert()')
 
 
-@timeit('RBTree::remove()')
 def test_rbtree_remove():
-    def removed_one(arr, el):
-        arr = arr.copy()
-        arr.remove(el)
-        return arr
-
-    def test_remove(t):
-        flatten = list(t.data_iter())
-        for to_remove in sorted(set(flatten)):
-            test_tree = t.deepcopy()
-            removed_node = test_tree.remove(to_remove)
-            assert removed_node.data == to_remove
-            assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
-            assert is_rbtree(test_tree)
-            assert is_bstree(test_tree)
-
-        test_tree = t.deepcopy()
-        assert test_tree.remove(min(flatten, default=0) - 1) is None
-        assert test_tree.remove(max(flatten, default=0) + 1) is None
-
-    for tree, count in gen_rbtree_by_insert(8):
-        test_remove(tree)
+    run_bstree_remove_test(8, gen_rbtree_by_insert, is_rbtree, 'RBTree::remove()')

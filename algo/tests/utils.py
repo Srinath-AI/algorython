@@ -6,7 +6,8 @@ from time import perf_counter
 import functools
 
 from algo.heap import heap_left, heap_right
-from algo.tree.bstree import BSNode
+from algo.tree.basetree import print_tree
+from algo.tree.bstree import BSNode, is_bstree
 
 
 def asc_seq(maxlen):
@@ -381,3 +382,47 @@ def gen_bst_from_tree(root, data=0, lo=None, hi=None):
 def gen_bst(level):
     for t in gen_tree(level):
         yield from gen_bst_from_tree(t)
+
+
+def run_bstree_insert_test(maxsize, gen_bstree, verifier, desc):
+    with timed_test(desc) as get_duration:
+        tree_count = 0
+        for tree, count in gen_bstree(maxsize):
+            assert tree.count() == count \
+                   and verifier(tree) and is_bstree(tree), print_tree(tree)
+            tree_count += 1
+
+    case_per_sec = tree_count / get_duration()
+    print('maxsize: {maxsize}, cases: {tree_count}, case_per_sec: {case_per_sec:.1f}'
+          .format_map(locals()))
+
+
+def run_bstree_remove_test(maxsize, gen_bstree, verifier, desc):
+    def removed_one(arr, el):
+        arr = arr.copy()
+        arr.remove(el)
+        return arr
+
+    def test_remove(t):
+        flatten = list(t.data_iter())
+        for to_remove in sorted(set(flatten)):
+            test_tree = t.deepcopy()
+            removed_node = test_tree.remove(to_remove)
+            assert removed_node.data == to_remove
+            assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
+            assert verifier(test_tree)
+            assert is_bstree(test_tree)
+
+        test_tree = t.deepcopy()
+        assert test_tree.remove(min(flatten, default=0) - 1) is None
+        assert test_tree.remove(max(flatten, default=0) + 1) is None
+
+    with timed_test(desc) as get_duration:
+        tree_count = 0
+        for tree, count in gen_bstree(maxsize):
+            test_remove(tree)
+            tree_count += 1
+
+    case_per_sec = tree_count / get_duration()
+    print('maxsize: {maxsize}, cases: {tree_count}, case_per_sec: {case_per_sec:.1f}'
+          .format_map(locals()))
