@@ -18,7 +18,7 @@ def is_avltree(tree):
     def check(node, parent):
         height = avl_height_of(node)
         if height == 0:
-            return True
+            return node is None
 
         l, r = avl_height_of(node.left), avl_height_of(node.right)
         if max(l, r) - min(l, r) > 1:
