@@ -2,7 +2,10 @@ from functools import partial
 from itertools import groupby, chain
 
 from algo.sort import *
-from algo.tests.utils import gen_case, gen_special_case, get_func_name, print_matrix, timed_test
+from algo.tests.utils import (
+    gen_sort_case, gen_special_sort_case,
+    get_func_name, print_matrix, timed_test
+)
 
 
 all_sort_funcs = (
@@ -46,7 +49,7 @@ def test_sort():
         kwargs = getattr(func, 'keywords', {})
 
         with timed_test(desc, 'permutation'):
-            for seq in gen_case(maxlen):
+            for seq in gen_sort_case(maxlen):
                 check_sorted(seq, func=func, **kwargs)
 
     for sorter, description in all_sort_funcs:
@@ -64,12 +67,12 @@ def test_stable_sort():
 
     for func, desc in stable_sort_funcs:
         def gen_spec_case(size):
-            spec_cases = gen_special_case(size)
+            spec_cases = gen_special_sort_case(size)
             for case in ('rand', 'dup', 'dup99'):
                 yield spec_cases[case]
 
         with timed_test(desc, 'stable sort'):
-            for arr in chain(gen_case(7), gen_spec_case(5000)):
+            for arr in chain(gen_sort_case(7), gen_spec_case(5000)):
                 indexed = list(enumerate(arr))      # index, key
                 func(indexed, key=lambda x: x[1])   # sort by key
                 check_stable(indexed)
@@ -77,7 +80,7 @@ def test_stable_sort():
 
 def test_sort_perf():
     matrix = []
-    cases = gen_special_case(2000)
+    cases = gen_special_sort_case(2000)
 
     for func, desc in all_sort_funcs:
         matrix.append([desc, []])

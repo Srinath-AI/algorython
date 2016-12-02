@@ -1,4 +1,4 @@
-from algo.tests.utils import gen_case, get_func_name, timeit, timed_test
+from algo.tests.utils import gen_sort_case, get_func_name, timeit, timed_test
 from algo.heap import *
 
 
@@ -15,7 +15,7 @@ def test_heap_verify():
 
 @timeit('heap_make()')
 def test_heap_make():
-    for seq in gen_case(7):
+    for seq in gen_sort_case(7):
         copy = seq.copy()
         heap_make(copy)
         assert heap_verify(copy)
@@ -23,7 +23,7 @@ def test_heap_make():
 
 @timeit('heap_push()')
 def test_heap_push():
-    for seq in gen_case(7):
+    for seq in gen_sort_case(7):
         if len(seq) == 0:
             continue
 
@@ -46,7 +46,7 @@ def test_heap_push():
 
 @timeit('heap_pop()')
 def test_heap_pop():
-    for seq in gen_case(7):
+    for seq in gen_sort_case(7):
         if len(seq) == 0:
             continue
 
@@ -60,7 +60,7 @@ def test_heap_pop():
 def test_topk():
     for topk in (topk_by_bigheap, topk_by_smallheap):
         with timed_test(get_func_name(topk)):
-            for seq in gen_case(7):
+            for seq in gen_sort_case(7):
                 sorted_input = sorted(seq)
                 for k in range(len(seq)):
                     copy = seq.copy()

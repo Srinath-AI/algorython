@@ -128,12 +128,12 @@ def perm_seq(seq):
         yield from g(0, total)
 
 
-def gen_case(maxlen):
+def gen_sort_case(maxlen):
     for seq in asc_seq(maxlen):
         yield from perm_seq(seq)
 
 
-def gen_special_case(size):
+def gen_special_sort_case(size):
     ascending = list(range(size))
     descending = list(reversed(ascending))
 
@@ -199,20 +199,19 @@ def print_matrix(mat):
         head.append(desc)
     table = [head]
 
-    for row in mat:
-        case, kv = row
-        line = [case]
+    for case, kv in mat:
+        cells = [case]
         for desc, value in kv:
-            line.append(fmt_time(value))
-        table.append(line)
+            cells.append(fmt_time(value))
+        table.append(cells)
 
-    def print_table(table):
+    def print_table(row_list):
         def max_col_width(i):
-            return max(len(row[i]) for row in table)
+            return max(len(row[i]) for row in row_list)
 
-        col_width = [ max_col_width(i) for i in range(len(table[0])) ]
+        col_width = [ max_col_width(i) for i in range(len(row_list[0])) ]
         lines = []
-        for rowno, row in enumerate(table):
+        for rowno, row in enumerate(row_list):
             just = str.rjust if rowno != 0 else str.ljust
             line = '│'.join(just(cell, col_width[i]) for i, cell in enumerate(row))
             lines.append('│' + line + '│')

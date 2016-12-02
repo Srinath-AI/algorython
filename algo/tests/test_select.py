@@ -1,13 +1,16 @@
 from functools import partial
 
-from algo.tests.utils import get_func_name, gen_case, gen_special_case, print_matrix, timed_test
+from algo.tests.utils import (
+    gen_sort_case, gen_special_sort_case,
+    get_func_name, print_matrix, timed_test
+)
 from algo.select import *
 
 
 def test_nth_small():
     for func in (nth_small_mm, nth_small):
         with timed_test(get_func_name(func)):
-            for seq in gen_case(7):
+            for seq in gen_sort_case(7):
                 copy = seq.copy()
                 if len(copy) == 0:
                     continue
@@ -33,7 +36,7 @@ def test_nth_small_perf():
         dict(func=nth_small),
         dict(func=nth_small_tail),
     )
-    cases = gen_special_case(2000)
+    cases = gen_special_sort_case(2000)
 
     for test_func in funcs:
         func = test_func['func']
