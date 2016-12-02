@@ -236,7 +236,8 @@ class AVLTree(BaseTree):
                     fix_child(p)
             elif delta == 1:
                 self.set_child(node, avl_adjust_direction(node, p), parent=p)
-            elif delta == 2:
+            else:
+                assert delta == 2
                 origin_height = node.height
 
                 if left_h < right_h:
@@ -255,8 +256,6 @@ class AVLTree(BaseTree):
                     assert top2.height + 1 == origin_height
                     if p is not None:
                         fix_child(p)
-            else:
-                assert False
 
         if target.right is None or target.right is None:
             self.set_child(target, target.left or target.right, parent=target_parent)
