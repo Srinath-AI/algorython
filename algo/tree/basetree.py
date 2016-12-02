@@ -251,6 +251,9 @@ class BaseTree:
     def remove(self, data):
         raise NotImplementedError
 
+    def find(self, data):
+        raise NotImplementedError
+
     def set_child(self, old, new, stack=None, parent=None):
         if stack is not None:
             assert parent is None
