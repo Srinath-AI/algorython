@@ -1,4 +1,5 @@
 from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
+from algo.tree.bstree import bst_find
 
 
 def avl_height_of(node):
@@ -111,6 +112,9 @@ class AVLNode(BaseNode):
 class AVLTree(BaseTree):
     __slots__ = ()
     node_type = AVLNode
+
+    def find(self, data):
+        return bst_find(self.root, data)
 
     def insert(self, data):
         if self.root is None:

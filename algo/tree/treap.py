@@ -1,6 +1,7 @@
 import random
 
 from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
+from algo.tree.bstree import bst_find
 
 
 def is_treap(tree):
@@ -103,6 +104,9 @@ def treap_remove_data(node, data):
 class Treap(BaseTree):
     __slots__ = ()
     node_type = TreapNode
+
+    def find(self, data):
+        return bst_find(self.root, data)
 
     def insert(self, data):
         new_node = TreapNode(data)

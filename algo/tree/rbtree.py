@@ -1,4 +1,5 @@
 from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
+from algo.tree.bstree import bst_find
 
 
 def rb_color_of(node):
@@ -67,6 +68,9 @@ class RBNode(BaseNode):
 class RBTree(BaseTree):
     __slots__ = ()
     node_type = RBNode
+
+    def find(self, data):
+        return bst_find(self.root, data)
 
     def insert(self, data):
         if self.root is None:
