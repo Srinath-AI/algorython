@@ -11,41 +11,62 @@ def is_bstree(tree, iterator=middle_iter):
             if node.data < prev.data:
                 return False
         prev = node
-    else:
-        return True
+
+    return True
 
 
 class BSNode(BaseNode):
     __slots__ = ()
 
-    def insert_node(self, node):
-        """
-        :type node: BSNode
-        """
-        cur = self
-        while True:
-            if node.data < cur.data:
-                if cur.left is None:
-                    cur.left = node
-                    return
-                else:
-                    cur = cur.left
-            else:
-                if cur.right is None:
-                    cur.right = node
-                    return
-                else:
-                    cur = cur.right
 
-    def find_first(self, data):
-        cur = self
-        while cur is not None and data != cur.data:
-            if data < cur.data:
-                cur = cur.left
-            else:
-                cur = cur.right
+def bst_insert_node(node, new_node):
+    """
+    :type node: BaseNode
+    :type new_node: BaseNode
+    """
+    if node is None:
+        return new_node
 
-        return cur
+    root = node
+    while True:
+        if new_node.data < node.data:
+            if node.left is None:
+                node.left = new_node
+                return root
+            else:
+                node = node.left
+        else:
+            if node.right is None:
+                node.right = new_node
+                return root
+            else:
+                node = node.right
+
+
+def bst_find(node, data):
+    """
+    :type node: BaseNode
+    """
+    while node is not None and node.data != data:
+        if data < node.data:
+            node = node.left
+        else:
+            node = node.right
+
+    return node
+
+
+def bst_find_all(node, data):
+    """
+    :type node: BaseNode
+    """
+    while node is not None:
+        node = bst_find(node, data)
+        if node is not None:
+            if node.left is not None and node.left.data == data:
+                yield from bst_find_all(node.left, data)
+            yield node
+            node = node.right
 
 
 class BSTree(BaseTree):
@@ -54,28 +75,14 @@ class BSTree(BaseTree):
 
     def insert(self, data):
         node = self.node_type(data)
-        if self.root is None:
-            self.root = node
-        else:
-            self.root.insert_node(node)
+        self.root = bst_insert_node(self.root, node)
+        return node
 
-    def find_first(self, data):
-        if self.root is None:
-            return None
-        else:
-            return self.root.find_first(data)
+    def find(self, data):
+        return bst_find(self.root, data)
 
     def find_all(self, data):
-        if self.root is None:
-            raise StopIteration
-        else:
-            ans = self.root.find_first(data)
-            while ans is not None:
-                yield ans
-                if ans.right is not None:
-                    ans = ans.right.find_first(data)
-                else:
-                    raise StopIteration
+        yield from bst_find_all(self.root, data)
 
     def remove(self, data):
         cur, parent, pp = self.root, None, None

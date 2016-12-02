@@ -37,11 +37,11 @@ def test_bst_find():
             nodes = list(tree.find_all(key))
             assert len(nodes) == count
             assert all(n.data == key for n in nodes)
-            assert tree.find_first(key).data == key
+            assert tree.find(key).data == key
 
         for non_exist in (min(tree.data_iter(), default=0) - 1,
                           max(tree.data_iter(), default=0) + 1):
-            assert tree.find_first(non_exist) is None
+            assert tree.find(non_exist) is None
 
 
 @timeit('BSTree::insert()')
