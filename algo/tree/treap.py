@@ -76,17 +76,15 @@ def treap_remove_data(node, data):
     """
     :type node: TreapNode
     """
+    # no rotation needed
+
     if node is None:
         return None, None
 
     if data < node.data:
         node.left, removed = treap_remove_data(node.left, data)
-        if node.left is not None and node.left.priority < node.priority:
-            node = rotate_right(node)
     elif data > node.data:
         node.right, removed = treap_remove_data(node.right, data)
-        if node.right is not None and node.right.priority < node.priority:
-            node = rotate_left(node)
     else:
         assert data == node.data
         if node.right is None:
