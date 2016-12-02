@@ -16,6 +16,9 @@ class BaseNode:
             data=self.data,
         )
 
+    def _node_repr_(self):
+        return '[{}]'.format(self.data)
+
     @classmethod
     def from_heap(cls, heap, heap_root=0):
         data = heap[heap_root]
@@ -51,19 +54,6 @@ def pretty_tree(tree):
     # TODO: fullwidth char?
     # TODO: colorize in ipython console
 
-    def fmt_data(node):
-        formated = repr(node.data)
-
-        if hasattr(node, 'color'):      # for rbtree
-            from algo.tree.rbtree import RBNode
-            dot = {RBNode.BLACK: '■', RBNode.RED: '□'}[node.color]
-            formated = dot + formated
-        elif hasattr(node, 'height'):   # for avltree
-            formated = '{}|h={}'.format(formated, node.height)
-        else:
-            formated = '[{}]'.format(formated)
-        return formated
-
     def make_box(node):
         if node is None:
             return ['NIL'], 1
@@ -95,7 +85,7 @@ def pretty_tree(tree):
             jbox.append(line1 + ' ' + line2)
 
         # data of parent node
-        data_line = fmt_data(node)
+        data_line = node._node_repr_()
         assert len(data_line) >= 1
         center = (len(data_line) + 1) // 2 - 1
 
