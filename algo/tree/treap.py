@@ -23,15 +23,11 @@ def is_treap(tree):
 
 class TreapNode(BaseNode):
     __slots__ = ('priority',)
+    _extra_attr_ = BaseNode._extra_attr_ + __slots__
 
     def __init__(self, data):
         super().__init__(data)
         self.priority = random.random()
-
-    def deepcopy(self):
-        ret = super().deepcopy()
-        ret.priority = self.priority
-        return ret
 
     def _short_repr_(self):
         return '{self.data}|p={self.priority:.3}'.format_map(locals())

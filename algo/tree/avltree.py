@@ -95,15 +95,11 @@ def avl_adjust_direction(node, parent):
 
 class AVLNode(BaseNode):
     __slots__ = ('height',)
+    _extra_attr_ = BaseNode._extra_attr_ + __slots__
 
     def __init__(self, data):
         super().__init__(data)
         self.height = 1
-
-    def deepcopy(self):
-        ret = super().deepcopy()
-        ret.height = self.height
-        return ret
 
     def _short_repr_(self):
         return '{self.data}|h={self.height}'.format_map(locals())

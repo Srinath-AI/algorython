@@ -47,6 +47,7 @@ def is_rbtree(tree):
 
 class RBNode(BaseNode):
     __slots__ = ('color',)
+    _extra_attr_ = BaseNode._extra_attr_ + __slots__
 
     RED   = 0
     BLACK = 1
@@ -54,11 +55,6 @@ class RBNode(BaseNode):
     def __init__(self, data, color=RED):
         super().__init__(data)
         self.color = color
-
-    def deepcopy(self):
-        ret = super().deepcopy()
-        ret.color = self.color
-        return ret
 
     def _short_repr_(self):
         dot = { RBNode.BLACK: '■', RBNode.RED: '□' }[self.color]

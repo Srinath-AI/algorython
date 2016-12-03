@@ -3,6 +3,7 @@ from algo.heap import heap_left, heap_right
 
 class BaseNode:
     __slots__ = ('data', 'left', 'right')
+    _extra_attr_ = ()
 
     def __init__(self, data):
         self.data = data
@@ -37,8 +38,14 @@ class BaseNode:
 
         return root
 
+    def _copy_extra_attr_to(self, node):
+        for attr in self._extra_attr_:
+            setattr(node, attr, getattr(self, attr))
+
     def deepcopy(self):
         node = self.__class__(self.data)
+        self._copy_extra_attr_to(node)
+
         if self.left is not None:
             node.left = self.left.deepcopy()
         if self.right is not None:
