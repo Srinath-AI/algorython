@@ -14,7 +14,3 @@ def test_bisect():
         not_exists = [ (x + 0.5) for x in range(-1, max(seq) + 1) ] if seq else [0]
         for x in not_exists:
             assert bisect_find(copy, x) is None
-
-
-if __name__ == '__main__':
-    test_bisect()

@@ -67,10 +67,3 @@ def test_topk():
                     kseq = topk(copy, k)
                     assert sorted(kseq) == sorted_input[len(seq) - k:], \
                         'topk({copy}, {k}) -> {kseq}'.format_map(vars())
-
-
-if __name__ == '__main__':
-    test_heap_make()
-    test_heap_push()
-    test_heap_pop()
-    test_topk()

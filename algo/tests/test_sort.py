@@ -103,12 +103,3 @@ def test_sort_perf():
         print()
 
     print_matrix(matrix)
-
-
-if __name__ == '__main__':
-    # import sys
-    # sys.setrecursionlimit(5000)
-
-    test_sort()
-    test_stable_sort()
-    test_sort_perf()

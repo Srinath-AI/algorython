@@ -55,8 +55,3 @@ def test_nth_small_perf():
         print()
 
     print_matrix(matrix)
-
-
-if __name__ == '__main__':
-    test_nth_small()
-    test_nth_small_perf()
