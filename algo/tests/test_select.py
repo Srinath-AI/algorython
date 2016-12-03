@@ -8,7 +8,7 @@ from algo.select import *
 
 
 def test_nth_small():
-    for func in (nth_small_mm, nth_small):
+    for func in (nth_small_mm, nth_small, nth_small_tail):
         with timed_test(get_func_name(func)):
             for seq in gen_sort_case(7):
                 copy = seq.copy()
