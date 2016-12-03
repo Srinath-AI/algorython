@@ -20,6 +20,7 @@ sort_funcs = (
     dict(func=heap_sort),
     dict(func=merge_sort, stable=True),
     dict(func=bucket_sort, stable=True),
+    dict(func=partial(bucket_sort, bucket_size=1), name='bucket_sort+size=1', stable=True),
     dict(func=partial(tree_sort, tree_type=RBTree), name='tree_sort+rbtree', stable=True),
     dict(func=partial(tree_sort, tree_type=AVLTree), name='tree_sort+avltree', stable=True),
     dict(func=partial(tree_sort, tree_type=Treap), name='tree_sort+treap', stable=True),
