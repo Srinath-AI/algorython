@@ -2,23 +2,33 @@ import functools
 import operator
 
 
-class ReversedKeyMeta(type):
+class ComparableBaseMeta(type):
     def __new__(mcs, name, bases, namespace):
         klass = super().__new__(mcs, name, bases, namespace)
-        all_methods = (('eq', 'ne', 'lt', 'gt', 'le', 'ge',)     # comparison
-                       + ('sub',))      # comparison by subtraction
-        for method_name in all_methods:
-            method_name = '__{}__'.format(method_name)
+        for op_name in ('eq', 'ne', 'lt', 'gt', 'le', 'ge', 'sub'): # __sub__ may be used for comparison
+            method_name = '__{}__'.format(op_name)
 
-            def make_func(method_name):
+            def create_method(op_name):
                 @functools.wraps(getattr(int, method_name))
-                def func(self, other):
-                    return getattr(other.value, method_name)(self.value)
-                return func
+                def method(self, other):
+                    return mcs.compare(op_name, self, other)
+                return method
 
-            setattr(klass, method_name, make_func(method_name))
+            setattr(klass, method_name, create_method(op_name))
 
         return klass
+
+    @staticmethod
+    def compare(op_name, a, b):
+        return NotImplemented
+
+
+class ReversedKeyMeta(ComparableBaseMeta):
+
+    @staticmethod
+    def compare(op_name, a, b):
+        method_name = '__{}__'.format(op_name)
+        return getattr(b.value, method_name)(a.value)
 
 
 class ReversedKey(metaclass=ReversedKeyMeta):
@@ -28,21 +38,12 @@ class ReversedKey(metaclass=ReversedKeyMeta):
         self.value = value
 
 
-class WrappedDataMeta(type):
-    def __new__(mcs, name, bases, namespace):
-        klass = super().__new__(mcs, name, bases, namespace)
-        for method_name in ('eq', 'ne', 'lt', 'gt', 'le', 'ge',):
-            ops = getattr(operator, method_name)
+class WrappedDataMeta(ComparableBaseMeta):
 
-            def make_func(ops):
-                @functools.wraps(getattr(object, '__{}__'.format(method_name)))
-                def func(self, other):
-                    return ops(self.keyed, other.keyed)
-                return func
-
-            setattr(klass, '__{}__'.format(method_name), make_func(ops))
-
-        return klass
+    @staticmethod
+    def compare(op_name, a, b):
+        ops = getattr(operator, op_name)
+        return ops(a.keyed, b.keyed)
 
 
 class WrappedData(metaclass=WrappedDataMeta):
