@@ -60,6 +60,13 @@ class RBNode(BaseNode):
         dot = { RBNode.BLACK: '■', RBNode.RED: '□' }[self.color]
         return '{dot}{self.data}'.format_map(locals())
 
+    def _add_to_graphviz(self, g, name):
+        if self.color == RBNode.RED:
+            opts = dict(color='red')
+        else:
+            opts = dict(color='black', fontcolor='white')
+        g.node(name, repr(self.data), **opts)
+
 
 class RBTree(BaseTree):
     __slots__ = ()

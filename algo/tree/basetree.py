@@ -18,7 +18,7 @@ class BaseNode:
         )
 
     def _short_repr_(self):
-        return '[{}]'.format(self.data)
+        return '{}'.format(self.data)
 
     @classmethod
     def from_heap(cls, heap, heap_root=0):
@@ -41,6 +41,12 @@ class BaseNode:
     def _copy_extra_attr_to(self, node):
         for attr in self._extra_attr_:
             setattr(node, attr, getattr(self, attr))
+
+    def _add_to_graphviz(self, g, name):
+        """
+        :type g: graphviz.Digraph
+        """
+        g.node(name, self._short_repr_())
 
     def deepcopy(self):
         node = self.__class__(self.data)
@@ -297,26 +303,14 @@ class BaseTree:
 
         serial_gen = map(lambda x: 'N_{}'.format(x), itertools.count())
 
-        def get_node_option(node):
-            if hasattr(node, 'color'):
-                from algo.tree.rbtree import RBNode
-                if node.color == RBNode.RED:
-                    return dict(color='red')
-                else:
-                    return dict(color='black', fontcolor='white')
-            elif node is None:
-                return dict(color='black', fontcolor='white')
-            else:
-                return dict()
-
         def sub(node, parent=None):
             name = next(serial_gen)
             if node is not None:
-                g.node(name, repr(node.data), **get_node_option(node))
+                node._add_to_graphviz(g, name)
                 sub(node.left, name)
                 sub(node.right, name)
             else:
-                g.node(name, 'NIL', **get_node_option(node))
+                g.node(name, 'NIL', color='black', fontcolor='white', fontsize='8')
             if parent is not None:
                 g.edge(parent, name)
 

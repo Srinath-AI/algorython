@@ -30,7 +30,7 @@ class TreapNode(BaseNode):
         self.priority = random.random()
 
     def _short_repr_(self):
-        return '{self.data}|p={self.priority:.3}'.format_map(locals())
+        return '{self.data}|p={self.priority:.3f}'.format_map(locals())
 
 
 def treap_insert_node(node, new_node):
