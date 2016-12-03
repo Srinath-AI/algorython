@@ -2,29 +2,29 @@ from functools import partial
 from itertools import groupby, chain
 
 from algo.sort import *
+from algo.tree import RBTree, AVLTree, Treap, BSTree
 from algo.tests.utils import (
     gen_sort_case, gen_special_sort_case,
     get_func_name, print_matrix, timed_test
 )
 
 
-all_sort_funcs = (
-    (qsort3, 'qsort3'),
-    (partial(qsort3, part_func=qsort_part3_alt), 'qsort3+alt'),
-    (partial(qsort3, part_func=qsort_part3_random), 'qsort3+rand'),
-    (partial(qsort, part_func=qsort_part_head), 'qsort+head'),
-    (partial(qsort, part_func=qsort_part_tail), 'qsort+tail'),
-    (partial(qsort, part_func=qsort_part_hoare_like), 'qsort+hoare'),
-    (partial(qsort, part_func=qsort_part_random), 'qsort+rand'),
-    (heap_sort, 'heap_sort'),
-    (merge_sort, 'merge_sort'),
-    (bucket_sort, 'bucket_sort'),
-    (list.sort, 'list.sort'),
-)
-
-stable_sort_funcs = (
-    (merge_sort, 'merge_sort'),
-    (bucket_sort, 'bucket_sort'),
+sort_funcs = (
+    dict(func=qsort3),
+    dict(func=partial(qsort3, part_func=qsort_part3_alt), name='qsort3+alt'),
+    dict(func=partial(qsort3, part_func=qsort_part3_random), name='qsort3+rand'),
+    dict(func=partial(qsort, part_func=qsort_part_head), name='qsort+head'),
+    dict(func=partial(qsort, part_func=qsort_part_tail), name='qsort+tail'),
+    dict(func=partial(qsort, part_func=qsort_part_hoare_like), name='qsort+hoare'),
+    dict(func=partial(qsort, part_func=qsort_part_random), name='qsort+rand'),
+    dict(func=heap_sort),
+    dict(func=merge_sort, stable=True),
+    dict(func=bucket_sort, stable=True),
+    dict(func=partial(tree_sort, tree_type=RBTree), name='tree_sort+rbtree', stable=True),
+    dict(func=partial(tree_sort, tree_type=AVLTree), name='tree_sort+avltree', stable=True),
+    dict(func=partial(tree_sort, tree_type=Treap), name='tree_sort+treap', stable=True),
+    dict(func=partial(tree_sort, tree_type=BSTree), name='tree_sort+bstree', stable=True, skip_large=True),
+    dict(func=list.sort, name='list.sort', stable=True),
 )
 
 
@@ -52,8 +52,11 @@ def test_sort():
             for seq in gen_sort_case(maxlen):
                 check_sorted(seq, func=func, **kwargs)
 
-    for sorter, description in all_sort_funcs:
-        perm_test(sorter, description)
+    for entry in sort_funcs:
+        sorter = entry['func']
+        desc = entry.get('name', get_func_name(sorter))
+
+        perm_test(sorter, desc)
         # test ReversedKey and reversed sort
         check_sorted(list(range(100)), func=sorter, reverse=True)
         check_sorted(list(range(100, 0, -1)), func=sorter, reverse=True)
@@ -65,14 +68,26 @@ def test_stable_sort():
             indexes = list(x[0] for x in g)
             assert sorted(indexes) == indexes
 
-    for func, desc in stable_sort_funcs:
+    # for func, desc in stable_sort_funcs:
+    for entry in sort_funcs:
+        if not entry.get('stable', False):
+            continue
+        func = entry['func']
+        desc = entry.get('name', get_func_name(func))
+
         def gen_spec_case(size):
             spec_cases = gen_special_sort_case(size)
             for case in ('rand', 'dup', 'dup99'):
                 yield spec_cases[case]
 
+        if entry.get('skip_large', False):
+            print(desc, 'skipping large testcase.')
+            case_size = 500
+        else:
+            case_size = 5000
+
         with timed_test(desc, 'stable sort'):
-            for arr in chain(gen_sort_case(7), gen_spec_case(5000)):
+            for arr in chain(gen_sort_case(7), gen_spec_case(case_size)):
                 indexed = list(enumerate(arr))      # index, key
                 func(indexed, key=lambda x: x[1])   # sort by key
                 check_stable(indexed)
@@ -82,7 +97,13 @@ def test_sort_perf():
     matrix = []
     cases = gen_special_sort_case(2000)
 
-    for func, desc in all_sort_funcs:
+    for entry in sort_funcs:
+        func = entry['func']
+        desc = entry.get('name', get_func_name(func))
+        if entry.get('skip_large', False):
+            print(desc, 'skipping large testcase.')
+            continue
+
         matrix.append([desc, []])
         print('BEGIN {}'.format(desc))
 

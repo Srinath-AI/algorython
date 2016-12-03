@@ -1,7 +1,8 @@
 import random
 
 from algo.heap import heap_make, heap_pop
-from algo.utils import ReversedKey
+from algo.tree.rbtree import RBTree
+from algo.utils import ReversedKey, WrappedData
 
 # TODO: hybrid sort
 
@@ -227,3 +228,20 @@ def bucket_sort(arr, bucket_size=16, min_buckets=4, reverse=False, key=None):
             index += 1
 
 # END bucket sort
+
+
+# BEGIN tree sort
+
+def tree_sort(arr, reverse=False, key=None, tree_type=RBTree):
+    key = get_sort_key(reverse=reverse, key=key)
+    tree = tree_type()
+
+    for data in arr:
+        tree.insert(WrappedData(data, key))
+
+    index = 0
+    for wrapped in tree.data_iter():
+        arr[index] = wrapped.data
+        index += 1
+
+# END tree sort
