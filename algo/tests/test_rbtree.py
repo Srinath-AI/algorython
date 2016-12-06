@@ -1,5 +1,4 @@
 from algo.tests.utils import gen_bstree_by_insert, run_bstree_insert_test, run_bstree_remove_test
-from algo.tree.basetree import pretty_tree
 from algo.tree.rbtree import RBTree, RBNode, is_rbtree
 
 
@@ -68,35 +67,6 @@ def test_is_rbtree():
     for ans, ques in cases:
         tree = rbtree_from_nested_list(ques)
         assert is_rbtree(tree) is ans
-
-
-def test_pretty_tree():
-    def process(string):
-        return [ line.rstrip() for line in string.splitlines() if line.strip() ]
-
-    R, B = RBNode.RED, RBNode.BLACK
-    tree = rbtree_from_nested_list([B, B, [B, R, R]])
-    ans = '''
-       ■1
-   ┌───┴───────┐
-   ■0          ■3
- ┌─┴─┐     ┌───┴───┐
-NIL NIL    □2      □4
-         ┌─┴─┐   ┌─┴─┐
-        NIL NIL NIL NIL'''
-
-    output = pretty_tree(tree)
-    assert process(output) == process(ans)
-
-    tree = RBTree()
-    tree.insert(+8601010086)
-    ans = '''
-■8601010086
-   ┌─┴─┐
-  NIL NIL'''
-
-    output = pretty_tree(tree)
-    assert process(output) == process(ans)
 
 
 def gen_rbtree_by_insert(max_len):
