@@ -72,12 +72,31 @@ def treap_remove_next(node):
     return cur
 
 
+def treap_adjust(node):
+    """
+    :type node: TreapNode
+    """
+    assert node is not None
+
+    smaller = node
+    for child in (node.left, node.right):
+        if child is not None and child.priority < smaller.priority:
+            smaller = child
+
+    if smaller is node.left:
+        node = rotate_right(node)
+        node.right = treap_adjust(node.right)
+    elif smaller is node.right:
+        node = rotate_left(node)
+        node.left = treap_adjust(node.left)
+
+    return node
+
+
 def treap_remove_data(node, data):
     """
     :type node: TreapNode
     """
-    # no rotation needed
-
     if node is None:
         return None, None
 
@@ -93,8 +112,8 @@ def treap_remove_data(node, data):
             return node.right, node
         else:
             right_min = treap_remove_next(node)
-            right_min.priority = node.priority
             right_min.left, right_min.right = node.left, node.right
+            right_min = treap_adjust(right_min)
             return right_min, node
 
     return node, removed
