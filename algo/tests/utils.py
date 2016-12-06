@@ -403,15 +403,22 @@ def run_bstree_remove_test(maxsize, gen_bstree, verifier, desc):
         arr.remove(el)
         return arr
 
+    def print_failing(before, removing, after):
+        print('before')
+        print_tree(before)
+        print('removing', removing)
+        print_tree(after)
+        print()
+
     def test_remove(t):
         flatten = list(t.data_iter())
         for to_remove in sorted(set(flatten)):
             test_tree = t.deepcopy()
             removed_node = test_tree.remove(to_remove)
-            assert removed_node.data == to_remove
-            assert list(test_tree.data_iter()) == removed_one(flatten, to_remove)
-            assert verifier(test_tree)
-            assert is_bstree(test_tree)
+            assert removed_node.data == to_remove \
+                   and list(test_tree.data_iter()) == removed_one(flatten, to_remove) \
+                   and verifier(test_tree) \
+                   and is_bstree(test_tree), print_failing(t, to_remove, test_tree)
 
         test_tree = t.deepcopy()
         assert test_tree.remove(min(flatten, default=0) - 1) is None

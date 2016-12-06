@@ -113,6 +113,154 @@ def rb_insert_node(cur, node):
         return cur
 
 
+def rb_remove_fix_left(node):
+    """
+    :type node: RBNode
+    :rtype: (RBNode, bool)
+    """
+    if rb_color_of(node.left) == RBNode.RED:
+        node.left.color = RBNode.BLACK
+        return node, False
+
+    if node.right.color == RBNode.RED:
+        #     B               B
+        #    / \             / \
+        # * B   R           R   B
+        #  /|  / \  ==>    / \  |\
+        # 1 1 B   B     * B   B 2 2
+        #    /|  / \     /|  /|
+        #   2 2 2   2   1 1 2 2
+        node = rotate_left(node)
+        node.color = RBNode.BLACK
+        node.left.color = RBNode.RED
+        node.left, need_fix = rb_remove_fix_left(node.left)
+        if need_fix:
+            node, need_fix = rb_remove_fix_left(node)
+        assert not need_fix
+        return node, False
+    elif rb_color_of(node.right.left) == rb_color_of(node.right.right) == RBNode.BLACK:
+        #     ?            * ?
+        #    / \            / \
+        # * B   B          B   R
+        #  /|  / \  ==>   /|  / \
+        # 1 1 B   B      1 1 B   B
+        #    /|  / \        /|  / \
+        #   1 1 1   1      1 1 1   1
+        node.right.color = RBNode.RED
+        return node, True
+    elif rb_color_of(node.right.left) != rb_color_of(node.right.right) == RBNode.BLACK:
+        #     ?              ?              ?
+        #    / \            / \            / \
+        # * B   B          B   R        * B   B
+        #  /|  / \  ==>   /|  / \  ==>   /|  / \
+        # 1 1 R   B      1 1 2   B      1 1 2   R
+        #    /|  / \            / \            / \
+        #   2 2 1   1          2   B          2   B
+        #                         / \            / \
+        #                        1   1          1   1
+        node.right = rotate_right(node.right)
+        node.right.color = RBNode.BLACK
+        node.right.right.color = RBNode.RED
+        node, need_fix = rb_remove_fix_left(node)
+        assert not need_fix
+        return node, False
+    else:
+        #     ?               B               ?
+        #    / \             / \             / \
+        # * B   B           ?   R           B   B
+        #  /|  / \  ==>    / \  |\  ==>    / \  |\
+        # 1 1 2   R       B   2 2 2       B   2 2 2
+        #        / \     / \             / \
+        #       2   2   1   1           1   1
+        assert node.right.right.color == RBNode.RED
+        node = rotate_left(node)
+        node.color = node.left.color
+        node.left.color = node.right.color = RBNode.BLACK
+        return node, False
+
+
+def rb_remove_fix_right(node):
+    """
+    :type node: RBNode
+    :rtype: (RBNode, bool)
+    """
+    if rb_color_of(node.right) == RBNode.RED:
+        node.right.color = RBNode.BLACK
+        return node, False
+
+    if node.left.color == RBNode.RED:
+        node = rotate_right(node)
+        node.color = RBNode.BLACK
+        node.right.color = RBNode.RED
+        node.right, need_fix = rb_remove_fix_right(node.right)
+        if need_fix:
+            node, need_fix = rb_remove_fix_right(node)
+        assert not need_fix
+        return node, False
+    elif rb_color_of(node.left.right) == rb_color_of(node.left.left) == RBNode.BLACK:
+        node.left.color = RBNode.RED
+        return node, True
+    elif rb_color_of(node.left.right) != rb_color_of(node.left.left) == RBNode.BLACK:
+        node.left = rotate_left(node.left)
+        node.left.color = RBNode.BLACK
+        node.left.left.color = RBNode.RED
+        node, need_fix = rb_remove_fix_right(node)
+        assert not need_fix
+        return node, False
+    else:
+        assert node.left.left.color == RBNode.RED
+        node = rotate_right(node)
+        node.color = node.right.color
+        node.right.color = node.left.color = RBNode.BLACK
+        return node, False
+
+
+def rb_remove_min(node):
+    """
+    :type node: RBNode
+    :rtype (RBNode, RBNode, bool)
+    """
+    if node.left is None:
+        return node.right, node, node.color == RBNode.BLACK
+    else:
+        node.left, removed, need_fix = rb_remove_min(node.left)
+        if need_fix:
+            node, need_fix = rb_remove_fix_left(node)
+        return node, removed, need_fix
+
+
+def rb_remove(node, data):
+    """
+    :type node: RBNode
+    :rtype (RBNode, RBNode, bool)
+    """
+    if node is None:
+        return None, None, False
+
+    if data == node.data:
+        if node.right is None:
+            return node.left, node, node.color == RBNode.BLACK
+        elif node.left is None:
+            return node.right, node, node.color == RBNode.BLACK
+        else:
+            node.right, removed, need_fix = rb_remove_min(node.right)
+            removed.left, removed.right, removed.color = node.left, node.right, node.color
+            node, removed = removed, node
+            if need_fix:
+                node, need_fix = rb_remove_fix_right(node)
+            return node, removed, need_fix
+    elif data < node.data:
+        node.left, removed, need_fix = rb_remove(node.left, data)
+        if need_fix:
+            node, need_fix = rb_remove_fix_left(node)
+        return node, removed, need_fix
+    else:
+        node.right, removed, need_fix = rb_remove(node.right, data)
+        if need_fix:
+            node, need_fix = rb_remove_fix_right(node)
+        return node, removed, need_fix
+
+
 class RBTree(BaseTree):
     __slots__ = ()
     node_type = RBNode
@@ -128,167 +276,8 @@ class RBTree(BaseTree):
         return new_node
 
     def remove(self, data):
-        cur = self.root
-        stack = [cur]
-        while cur is not None and cur.data != data:
-            if data < cur.data:
-                cur = cur.left
-            else:
-                cur = cur.right
-            stack.append(cur)
-        stack.pop()     # pop cur
+        self.root, removed, need_fix = rb_remove(self.root, data)
+        if self.root is not None:
+            self.root.color = RBNode.BLACK
 
-        if cur is None:
-            return None
-        target = cur
-
-        def fix_left(node):
-            if rb_color_of(node.left) == RBNode.RED:
-                node.left.color = RBNode.BLACK
-                return
-
-            if node.right.color == RBNode.RED:
-                #     B               B
-                #    / \             / \
-                # * B   R           R   B
-                #  /|  / \  ==>    / \  |\
-                # 1 1 B   B     * B   B 2 2
-                #    /|  / \     /|  /|
-                #   2 2 2   2   1 1 2 2
-                top = rotate_left(node)
-                set_top(node, top)
-                top.left.color = RBNode.RED
-                top.color = RBNode.BLACK
-                stack.append(top)
-                fix_left(top.left)
-            elif rb_color_of(node.right.left) == rb_color_of(node.right.right) == RBNode.BLACK:
-                #     ?            * ?
-                #    / \            / \
-                # * B   B          B   R
-                #  /|  / \  ==>   /|  / \
-                # 1 1 B   B      1 1 B   B
-                #    /|  / \        /|  / \
-                #   1 1 1   1      1 1 1   1
-                node.right.color = RBNode.RED
-                try:
-                    p = stack.pop()
-                except IndexError:
-                    node.color = RBNode.BLACK
-                else:
-                    if node is p.left:
-                        fix_left(p)
-                    else:
-                        fix_right(p)
-            elif rb_color_of(node.right.right) == RBNode.RED:
-                #     ?               B               ?
-                #    / \             / \             / \
-                # * B   B           ?   R           B   B
-                #  /|  / \  ==>    / \  |\  ==>    / \  |\
-                # 1 1 2   R       B   2 2 2       B   2 2 2
-                #        / \     / \             / \
-                #       2   2   1   1           1   1
-                top = rotate_left(node)
-                set_top(node, top)
-                top.color = top.left.color
-                top.left.color = top.right.color = RBNode.BLACK
-            else:
-                #     ?              ?              ?
-                #    / \            / \            / \
-                # * B   B          B   R        * B   B
-                #  /|  / \  ==>   /|  / \  ==>   /|  / \
-                # 1 1 R   B      1 1 2   B      1 1 2   R
-                #    /|  / \            / \            / \
-                #   2 2 1   1          2   B          2   B
-                #                         / \            / \
-                #                        1   1          1   1
-                assert rb_color_of(node.right.left) != rb_color_of(node.right.right) == RBNode.BLACK
-                node.right = rotate_right(node.right)
-                node.right.color = RBNode.BLACK
-                node.right.right.color = RBNode.RED
-                fix_left(node)
-
-        def fix_right(node):
-            if rb_color_of(node.right) == RBNode.RED:
-                node.right.color = RBNode.BLACK
-                return
-
-            if node.left.color == RBNode.RED:
-                top = rotate_right(node)
-                set_top(node, top)
-                top.right.color = RBNode.RED
-                top.color = RBNode.BLACK
-                stack.append(top)
-                fix_right(top.right)
-            elif rb_color_of(node.left.right) == rb_color_of(node.left.left) == RBNode.BLACK:
-                node.left.color = RBNode.RED
-                try:
-                    p = stack.pop()
-                except IndexError:
-                    node.color = RBNode.BLACK
-                else:
-                    if node is p.right:
-                        fix_right(p)
-                    else:
-                        fix_left(p)
-            elif rb_color_of(node.left.left) == RBNode.RED:
-                top = rotate_right(node)
-                set_top(node, top)
-                top.color = top.right.color
-                top.right.color = top.left.color = RBNode.BLACK
-            else:
-                assert rb_color_of(node.left.right) != rb_color_of(node.left.left) == RBNode.BLACK
-                node.left = rotate_left(node.left)
-                node.left.color = RBNode.BLACK
-                node.left.left.color = RBNode.RED
-                fix_right(node)
-
-        def set_top(old, new):
-            return self.set_child(old, new, stack=stack)
-
-        if target.right is None or target.right is None:
-            child = target.left or target.right
-            set_top(target, child)
-            if target.color == RBNode.BLACK:
-                try:
-                    parent = stack.pop()
-                except IndexError:
-                    # target is root
-                    if self.root is not None:
-                        self.root.color = RBNode.BLACK
-                else:
-                    if child is parent.left:
-                        fix_left(parent)
-                    else:
-                        assert child is parent.right
-                        fix_right(parent)
-        else:
-            stack2 = [cur]
-            cur = cur.right
-            while cur is not None:
-                stack2.append(cur)
-                cur = cur.left
-            cur = stack2.pop()
-            stack2[0] = cur     # replace target
-            parent = stack2.pop()
-            need_fix = cur.color == RBNode.BLACK
-
-            if cur is target.right:
-                cur.left = target.left
-                cur.color = target.color
-                set_top(target, cur)
-                if need_fix:
-                    stack.extend(stack2)
-                    fix_right(cur)
-            else:
-                assert parent.left is cur
-                parent.left = cur.right
-                cur.left = target.left
-                cur.right = target.right
-                cur.color = target.color
-                set_top(target, cur)
-                if need_fix:
-                    stack.extend(stack2)
-                    fix_left(parent)
-
-        target.left = target.right = None
-        return target
+        return removed
