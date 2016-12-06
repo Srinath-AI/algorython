@@ -4,6 +4,9 @@ from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
 from algo.tree.bstree import bst_find
 
 
+# treap = minimum heap + binary search tree
+
+
 def is_treap(tree):
     """
     :type tree: Treap

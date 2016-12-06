@@ -277,7 +277,7 @@ class RBTree(BaseTree):
 
     def remove(self, data):
         self.root, removed, need_fix = rb_remove(self.root, data)
-        if self.root is not None:
+        if rb_color_of(self.root) == RBNode.RED:
             self.root.color = RBNode.BLACK
 
         return removed
