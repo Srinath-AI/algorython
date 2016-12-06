@@ -6,6 +6,9 @@ env:
   - CODECLIMATE_REPO_TOKEN=fa9e0617b8778a1186d75363c3c6ddc119d2cb360abdabcd2c85a0cbc35ee87e
 
 addons:
+  apt:
+    packages:
+      - graphviz
   code_climate:
     repo_token: fa9e0617b8778a1186d75363c3c6ddc119d2cb360abdabcd2c85a0cbc35ee87e
 
