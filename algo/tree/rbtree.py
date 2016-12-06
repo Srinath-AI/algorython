@@ -68,6 +68,51 @@ class RBNode(BaseNode):
         g.node(name, repr(self.data), **opts)
 
 
+def rb_insert_node(cur, node):
+    """
+    :type cur: RBNode
+    :type node: RBNode
+    """
+    if cur is None:
+        return node
+    else:
+        if node.data < cur.data:
+            cur.left = rb_insert_node(cur.left, node)
+            if cur.color == RBNode.BLACK:
+                if cur.left.color == RBNode.RED:
+                    if rb_color_of(cur.left.right) == RBNode.RED:
+                        #     B            B
+                        #    / \          /
+                        #   R   *        R
+                        #  / \     ==>  / \
+                        # *   R        R   *
+                        #    / \      / \
+                        #   *   *    *   *
+                        cur.left = rotate_left(cur.left)
+                    if rb_color_of(cur.left.left) == RBNode.RED:
+                        #       B
+                        #      / \         R
+                        #     R   *       / \
+                        #    / \     ==> B   B
+                        #   R   *       / \  |\
+                        #  / \         *   * * *
+                        # *   *
+                        cur = rotate_right(cur)
+                        assert cur.left.color == RBNode.RED
+                        cur.left.color = RBNode.BLACK
+        else:
+            cur.right = rb_insert_node(cur.right, node)
+            if cur.right.color == RBNode.RED:
+                if rb_color_of(cur.right.left) == RBNode.RED:
+                    cur.right = rotate_right(cur.right)
+                if rb_color_of(cur.right.right) == RBNode.RED:
+                    cur = rotate_left(cur)
+                    assert cur.right.color == RBNode.RED
+                    cur.right.color = RBNode.BLACK
+
+        return cur
+
+
 class RBTree(BaseTree):
     __slots__ = ()
     node_type = RBNode
@@ -76,78 +121,11 @@ class RBTree(BaseTree):
         return bst_find(self.root, data)
 
     def insert(self, data):
-        if self.root is None:
-            self.root = self.node_type(data, RBNode.BLACK)
-            return self.root
+        new_node = RBNode(data, color=RBNode.RED)
+        self.root = rb_insert_node(self.root, new_node)
+        self.root.color = RBNode.BLACK
 
-        stack = [self.root]
-        while stack[-1] is not None:
-            if data < stack[-1].data:
-                stack.append(stack[-1].left)
-            else:
-                stack.append(stack[-1].right)
-        else:
-            stack.pop()     # pop None
-
-        cur = stack[-1]
-        node = self.node_type(data, color=RBNode.RED)
-        if data < cur.data:
-            cur.left = node
-        else:
-            cur.right = node
-
-        def fix(red):
-            assert red.color == RBNode.RED
-            while red.color == RBNode.RED:
-                p = stack.pop()
-
-                if red.left is not None and red.left.color == RBNode.RED:
-                    if red is p.left:
-                        #     (p) B
-                        #        / \         R (red)
-                        # (red) R   *       / \
-                        #      / \     ==> B   B (p)
-                        #     R   *       / \  |\
-                        #    / \         *   * * *
-                        #   *   *
-                        top = rotate_right(p)
-                        top.left.color = RBNode.BLACK
-                    else:
-                        #   B (p)          B (p)
-                        #  / \            / \                  R
-                        # *   R (red)    *   R                / \
-                        #    / \     ==>    / \      ==> (p) B   B (red)
-                        #   R   *          *   R (red)      / \  |\
-                        #  / \                / \          *   * * *
-                        # *   *              *   *
-                        assert red is p.right
-                        p.right = rotate_right(red)
-                        top = rotate_left(p)
-                        top.right.color = RBNode.BLACK
-                else:
-                    assert red.right.color == RBNode.RED
-                    if red is p.left:
-                        p.left = rotate_left(red)
-                        top = rotate_right(p)
-                        top.left.color = RBNode.BLACK
-                    else:
-                        assert red is p.right
-                        top = rotate_left(p)
-                        top.right.color = RBNode.BLACK
-
-                assert top.color == RBNode.RED
-                self.set_child(p, top, stack=stack)
-
-                try:
-                    red = stack.pop()   # recursion
-                except IndexError:
-                    top.color = RBNode.BLACK
-                    return
-
-        if cur.color == RBNode.RED:
-            fix(stack.pop())
-
-        return node
+        return new_node
 
     def remove(self, data):
         cur = self.root
