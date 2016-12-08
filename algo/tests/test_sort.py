@@ -2,7 +2,7 @@ from functools import partial
 from itertools import groupby, chain
 
 from algo.sort import *
-from algo.tree import RBTree, AVLTree, Treap, BSTree
+from algo.tree import *
 from algo.tests.utils import (
     gen_sort_case, gen_special_sort_case,
     get_func_name, print_matrix, timed_test
@@ -24,6 +24,7 @@ sort_funcs = (
     dict(func=partial(tree_sort, tree_type=RBTree), name='tree_sort+rbtree', stable=True),
     dict(func=partial(tree_sort, tree_type=AVLTree), name='tree_sort+avltree', stable=True),
     dict(func=partial(tree_sort, tree_type=Treap), name='tree_sort+treap', stable=True),
+    dict(func=partial(tree_sort, tree_type=RSTree), name='tree_sort+rstree', stable=True),
     dict(func=partial(tree_sort, tree_type=BSTree), name='tree_sort+bstree', stable=True, skip_large=True),
     dict(func=list.sort, name='list.sort', stable=True),
 )
