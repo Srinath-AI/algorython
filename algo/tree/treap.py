@@ -56,22 +56,6 @@ def treap_insert_node(node, new_node):
     return node
 
 
-def treap_remove_next(node):
-    """
-    :type node: TreapNode
-    """
-    cur, p = node.right, node
-    while cur.left is not None:
-        cur, p = cur.left, cur
-
-    if cur is node.right:
-        node.right = cur.right
-    else:
-        p.left = cur.right
-
-    return cur
-
-
 def treap_remove_data(node, data):
     """
     :type node: TreapNode
