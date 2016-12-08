@@ -84,6 +84,7 @@ def treap_adjust(node):
             smaller = child
 
     if smaller is node.left:
+        # the expected height of node.left is larger, so rotate right for better balance
         node = rotate_right(node)
         node.right = treap_adjust(node.right)
     elif smaller is node.right:
@@ -99,11 +100,12 @@ def treap_remove_data(node, data):
     """
     if node is None:
         return None, None
-
-    if data < node.data:
+    elif data < node.data:
         node.left, removed = treap_remove_data(node.left, data)
+        return node, removed
     elif data > node.data:
         node.right, removed = treap_remove_data(node.right, data)
+        return node, removed
     else:
         assert data == node.data
         if node.right is None:
@@ -115,8 +117,6 @@ def treap_remove_data(node, data):
             right_min.left, right_min.right = node.left, node.right
             right_min = treap_adjust(right_min)
             return right_min, node
-
-    return node, removed
 
 
 class Treap(BaseTree):
