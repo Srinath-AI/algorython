@@ -98,6 +98,35 @@ def rst_insert_node(node, new_node):
         return node
 
 
+def rst_remove_data(node, data):
+    if node is None:
+        return None, None
+    elif data < node.data:
+        node.left, removed = rst_remove_data(node.left, data)
+        rst_fix_size(node)
+        return node, removed
+    elif data > node.data:
+        node.right, removed = rst_remove_data(node.right, data)
+        rst_fix_size(node)
+        return node, removed
+    else:
+        assert data == node.data
+        if node.right is None:
+            return node.left, node
+        elif node.left is None:
+            return node.right, node
+        else:
+            if random.randrange(node.size - 1) < node.left.size:
+                node = rst_rotate_right(node)
+                node.right, removed = rst_remove_data(node.right, data)
+            else:
+                node = rst_rotate_left(node)
+                node.left, removed = rst_remove_data(node.left, data)
+
+            rst_fix_size(node)
+            return node, removed
+
+
 class RSTree(BaseTree):
     __slots__ = ()
     node_type = RSNode
@@ -109,3 +138,7 @@ class RSTree(BaseTree):
         new_node = self.node_type(data)
         self.root = rst_insert_node(self.root, new_node)
         return new_node
+
+    def remove(self, data):
+        self.root, removed = rst_remove_data(self.root, data)
+        return removed
