@@ -20,7 +20,7 @@ def test_repr_svg():
     def strip_space(s):
         return ''.join(ch for ch in s if not ch.isspace())
 
-    for tree_type in (BSTree, RBTree, AVLTree, Treap):
+    for tree_type in (BSTree, RBTree, AVLTree, Treap, RSTree):
         tree = tree_type()
         for i in range(5):
             tree.insert(i)
