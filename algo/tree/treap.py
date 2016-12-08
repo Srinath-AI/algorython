@@ -94,7 +94,7 @@ class Treap(BaseTree):
         return bst_find(self.root, data)
 
     def insert(self, data):
-        new_node = TreapNode(data)
+        new_node = self.node_type(data)
         self.root = treap_insert_node(self.root, new_node)
         return new_node
 

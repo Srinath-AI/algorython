@@ -269,7 +269,7 @@ class RBTree(BaseTree):
         return bst_find(self.root, data)
 
     def insert(self, data):
-        new_node = RBNode(data, color=RBNode.RED)
+        new_node = self.node_type(data, color=RBNode.RED)
         self.root = rb_insert_node(self.root, new_node)
         self.root.color = RBNode.BLACK
 
