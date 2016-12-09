@@ -65,7 +65,7 @@ def qsort_part_hoare_like(arr, start, stop, key):
 
 
 def qsort_part3_alt(arr, start, stop, key):
-    # this is much slower than qsort_part3
+    # this is much slower than qsort_part3_head
     ref = key(arr[start])
     p1 = start
     p2 = start + 1
@@ -82,7 +82,7 @@ def qsort_part3_alt(arr, start, stop, key):
     return p1, p2
 
 
-def qsort_part3(arr, start, stop, key):
+def qsort_part3_head(arr, start, stop, key):
     ref = key(arr[start])
     p1 = start
     p2 = stop
@@ -106,7 +106,7 @@ def qsort_part3(arr, start, stop, key):
 def qsort_part3_random(arr, start, stop, key):
     key_idx = random.randint(start, stop)
     arr[start], arr[key_idx] = arr[key_idx], arr[start]
-    return qsort_part3(arr, start, stop, key)
+    return qsort_part3_head(arr, start, stop, key)
 
 
 def qsort(arr, key=None, reverse=False, part_func=qsort_part_tail):
@@ -126,7 +126,7 @@ def qsort(arr, key=None, reverse=False, part_func=qsort_part_tail):
             stack.append((p2 + 1, stop))
 
 
-def qsort3(arr, key=None, reverse=False, part_func=qsort_part3):
+def qsort3(arr, key=None, reverse=False, part_func=qsort_part3_head):
     if len(arr) <= 1:
         return
 

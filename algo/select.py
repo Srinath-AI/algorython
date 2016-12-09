@@ -1,4 +1,4 @@
-from algo.sort import qsort_part3_random, qsort_part3, qsort_part_tail
+from algo.sort import qsort_part3_random, qsort_part3_head, qsort_part_tail
 from algo.utils import ReversedKey
 
 
@@ -89,7 +89,7 @@ def nth_small_mm(arr, n, key=None, group=5, _begin=None, _end=None):
         nth_small_mm(arr, sub_n, key=key, group=group, _begin=_begin, _end=med_end)
         # swap median of median to begin
         arr[_begin + sub_n - 1], arr[_begin] = arr[_begin], arr[_begin + sub_n - 1]
-        return qsort_part3(arr, _begin, _end - 1, key=key)
+        return qsort_part3_head(arr, _begin, _end - 1, key=key)
 
     origin_begin = _begin
     while True:

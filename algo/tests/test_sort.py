@@ -10,7 +10,7 @@ from algo.tests.utils import (
 
 
 sort_funcs = (
-    dict(func=qsort3),
+    dict(func=qsort3, name='qsort3+head'),
     dict(func=partial(qsort3, part_func=qsort_part3_alt), name='qsort3+alt'),
     dict(func=partial(qsort3, part_func=qsort_part3_random), name='qsort3+rand'),
     dict(func=partial(qsort, part_func=qsort_part_head), name='qsort+head'),
