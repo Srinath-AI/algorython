@@ -397,6 +397,19 @@ def run_bstree_insert_test(maxsize, gen_bstree, verifier, desc):
           .format_map(locals()))
 
 
+def run_bstree_insert_test_large(case_size, tree_type, verifier, desc):
+    check_inteval = case_size // 100
+    cases = gen_special_sort_case(case_size)
+
+    with timed_test(desc):
+        for case_name, arr in cases.items():
+            tree = tree_type()
+            for i, x in enumerate(arr):
+                tree.insert(x)
+                if i % check_inteval == 0:
+                    assert verifier(tree), (x, print_tree(tree))
+
+
 def run_bstree_remove_test(maxsize, gen_bstree, verifier, desc):
     def removed_one(arr, el):
         arr = arr.copy()

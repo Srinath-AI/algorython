@@ -1,4 +1,6 @@
-from algo.tests.utils import gen_bstree_by_insert, run_bstree_insert_test, run_bstree_remove_test
+from algo.tests.utils import (
+    gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
+    run_bstree_remove_test)
 from algo.tree.basetree import print_tree
 from algo.tree.avltree import AVLTree, AVLNode, is_avltree, avl_reheight
 
@@ -51,6 +53,10 @@ def test_is_avltree():
 
 def test_avltree_insert():
     run_bstree_insert_test(9, gen_avltree_by_insert, is_avltree, 'AVLTree::insert()')
+
+
+def test_avltree_insert_large():
+    run_bstree_insert_test_large(2000, AVLTree, is_avltree, 'AVLTree::insert() large case')
 
 
 def test_avltree_remove():

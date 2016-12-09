@@ -81,15 +81,35 @@ def avl_adjust_direction(node, parent):
     if left_h > right_h:
         assert left_h == right_h + 1
         if node is parent.right:
-            return avl_rotate_right(node)
+            return avl_rotate_right_adjust(node)
         else:
             assert node is parent.left
     elif left_h < right_h:
         assert left_h + 1 == right_h
         if node is parent.left:
-            return avl_rotate_left(node)
+            return avl_rotate_left_adjust(node)
         else:
             assert node is parent.right
+    return node
+
+
+def avl_rotate_left_adjust(node):
+    """
+    :type node: AVLNode
+    """
+    node = avl_rotate_left(node)
+    node.left.right = avl_adjust_direction(node.left.right, node.left)
+    node.left = avl_adjust_direction(node.left, node)
+    return node
+
+
+def avl_rotate_right_adjust(node):
+    """
+    :type node: AVLNode
+    """
+    node = avl_rotate_right(node)
+    node.right.left = avl_adjust_direction(node.right.left, node.right)
+    node.right = avl_adjust_direction(node.right, node)
     return node
 
 
@@ -140,7 +160,7 @@ class AVLTree(BaseTree):
                     #   2   *   ==>   *   2
                     #      / \       / \
                     #     1   2     2   1
-                    p.left = node = avl_rotate_left(p.left)
+                    p.left = node = avl_rotate_left_adjust(p.left)
                 assert avl_height_of(node.left) > avl_height_of(node.right)
 
                 left_height, right_height = avl_height_of(p.left), avl_height_of(p.right)
@@ -169,12 +189,12 @@ class AVLTree(BaseTree):
                     assert avl_height_of(node.left) \
                         == avl_height_of(node.right) + 1 \
                         == avl_height_of(p.right) + 1
-                    new_p = avl_rotate_right(p)
+                    new_p = avl_rotate_right_adjust(p)
                     self.set_child(p, new_p, stack=stack)
             else:
                 assert node is p.right
                 if avl_height_of(node.right) < avl_height_of(node.left):
-                    p.right = node = avl_rotate_right(p.right)
+                    p.right = node = avl_rotate_right_adjust(p.right)
                 assert avl_height_of(node.right) > avl_height_of(node.left)
 
                 right_height, left_height = avl_height_of(p.right), avl_height_of(p.left)
@@ -188,7 +208,7 @@ class AVLTree(BaseTree):
                     assert avl_height_of(node.right) \
                         == avl_height_of(node.left) + 1 \
                         == avl_height_of(p.left) + 1
-                    new_p = avl_rotate_left(p)
+                    new_p = avl_rotate_left_adjust(p)
                     self.set_child(p, new_p, stack=stack)
 
         cur = stack.pop()
@@ -244,13 +264,9 @@ class AVLTree(BaseTree):
                 origin_height = node.height
 
                 if left_h < right_h:
-                    top1 = avl_rotate_left(node)
-                    top1.left.right = avl_adjust_direction(top1.left.right, top1.left)
-                    top1.left = avl_adjust_direction(top1.left, top1)
+                    top1 = avl_rotate_left_adjust(node)
                 else:
-                    top1 = avl_rotate_right(node)
-                    top1.right.left = avl_adjust_direction(top1.right.left, top1.right)
-                    top1.right = avl_adjust_direction(top1.right, top1)
+                    top1 = avl_rotate_right_adjust(node)
 
                 self.set_child(node, top1, parent=p)
                 top2 = avl_adjust_direction(top1, p)
