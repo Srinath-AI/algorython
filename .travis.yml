@@ -27,5 +27,6 @@ install:
 # command to run tests
 script: pytest -s --verbose algo/tests/
 
+# run coverage
 after_success:
-  pytest -s --verbose --cov=algo algo/tests/ && coveralls && codeclimate-test-reporter
+  pytest -s --verbose --cov=algo --ignore=algo/tests/perf algo/tests/ && coveralls && codeclimate-test-reporter
