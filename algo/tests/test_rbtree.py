@@ -1,4 +1,6 @@
-from algo.tests.utils import gen_bstree_by_insert, run_bstree_insert_test, run_bstree_remove_test
+from algo.tests.utils import (
+    gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
+    run_bstree_remove_test,)
 from algo.tree.rbtree import RBTree, RBNode, is_rbtree
 
 
@@ -75,6 +77,10 @@ def gen_rbtree_by_insert(max_len):
 
 def test_rbtree_insert():
     run_bstree_insert_test(8, gen_rbtree_by_insert, is_rbtree, 'RBTree::insert()')
+
+
+def test_rbtree_insert_large():
+    run_bstree_insert_test_large(2000, RBTree, is_rbtree, 'RBTree::insert() large case')
 
 
 def test_rbtree_remove():
