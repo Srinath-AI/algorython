@@ -3,7 +3,7 @@ from functools import reduce
 import statistics
 import random
 
-from algo.tests.utils import gen_special_sort_case, timed_test, print_matrix
+from algo.tests.utils import gen_special_sort_case, timed_test, print_matrix, print_histogram
 from algo.tests.test_tree import all_trees
 
 
@@ -46,6 +46,18 @@ def average_depth_stats(stats):
     ans['min_max'] = tuple(statistics.mean(x['min_max'][idx] for x in stats) for idx in (0, 1))
 
     return ans
+
+
+def get_percentage_dist(dists):
+    collected = dict()
+    for depth_count in dists:
+        collected.update(depth_count)
+
+    count = sum(c for d, c in collected.items())
+    for d, c in collected.items():
+        collected[d] /= count
+
+    return collected
 
 
 def test_insert():
@@ -121,5 +133,38 @@ def test_remove():
     print_matrix(matrix)
 
 
-def test_depth_distribution():
-    pass
+def test_depth_distribution_by_insert():
+    cases = gen_special_sort_case(2000)
+
+    for entry in all_trees:
+        tree_type = entry['tree']
+        tree_name = tree_type.__name__
+        if entry.get('is_random', False):
+            times = 5
+        else:
+            times = 3
+
+        for case_name, arr in cases.items():
+            dists = []
+            for n in range(times):
+                tree = tree_type()
+                for x in arr:
+                    tree.insert(x)
+
+                dists.append(measure_nil_depth(tree))
+
+            stats = list(map(get_stats_from_nil_depth, dists))
+            mean_stats = average_depth_stats(stats)
+            dist = get_percentage_dist(dists)
+            print(tree_name, case_name, mean_stats)
+
+            min_depth, max_depth = min(dist.keys()), max(dist.keys())
+            for d in range(min_depth, max_depth + 1):
+                if d not in dist:
+                    dist[d] = 0
+
+            pairs = list(dist.items())
+            pairs.sort(key=lambda p: p[0])
+
+            print_histogram(pairs)
+            print()

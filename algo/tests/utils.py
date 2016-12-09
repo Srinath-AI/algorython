@@ -227,6 +227,28 @@ def print_matrix(mat):
     print_table(table)
 
 
+def print_histogram(pairs, width=80):
+    block_chars = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
+
+    # TODO: handle fullwidth char
+    max_label_len = len(str(max(pairs, key=lambda x: len(str(x[0])))[0]))
+
+    def get_bar(percent, max_width):
+        blocks = percent * max_width
+        fullblocks = int(blocks)
+
+        bar = fullblocks * block_chars[-1]
+        if fullblocks != blocks:
+            halfblock_idx = int((blocks - fullblocks) * len(block_chars))
+            bar += block_chars[halfblock_idx]
+
+        return bar
+
+    for label, value in pairs:
+        print(str(label).rjust(max_label_len), end='')
+        print(get_bar(value, width - max_label_len))
+
+
 @contextmanager
 def timed_test(name, test_name=''):
     def get_duration():
