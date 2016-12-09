@@ -1,2 +1,2 @@
 [run]
-omit = algo/tests/perf/*
+# omit = algo/tests/perf/*
