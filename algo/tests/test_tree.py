@@ -4,6 +4,14 @@ from algo.tree.basetree import *
 from algo.tree.bstree import *
 
 
+all_trees = (
+    dict(tree=RBTree),
+    dict(tree=AVLTree),
+    dict(tree=Treap, is_random=True),
+    dict(tree=RSTree, is_random=True),
+)
+
+
 def test_middle_iter():
     for iterator in (middle_iter, middle_iter_bystack, middle_iter_sm):
         with timed_test(get_func_name(iterator)):
