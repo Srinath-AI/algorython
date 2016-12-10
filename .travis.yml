@@ -25,8 +25,10 @@ install:
   - pip install codeclimate-test-reporter
 
 # command to run tests
-script: pytest -s --verbose algo/tests/
-
-# run coverage
-after_success:
+script:
   pytest -s --verbose --cov=algo algo/tests/ && coveralls && codeclimate-test-reporter
+
+# run performance test without profiling
+after_success:
+  pytest -s --verbose algo/tests/perf/
+
