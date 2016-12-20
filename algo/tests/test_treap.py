@@ -77,3 +77,12 @@ def test_treap_split():
         assert left.root is None and list(right.data_iter()) == nums
         left, right = tree.deepcopy().split(max(nums, default=0) + 1)
         assert right.root is None and list(left.data_iter()) == nums
+
+
+def test_treap_union():
+    prev = None
+    for tree, _ in gen_treap_by_insert(7):  # type: Treap
+        if prev is not None:
+            union = prev.union(tree)
+            assert list(union.data_iter()) == sorted(list(tree.data_iter()) + list(prev.data_iter()))
+        prev = tree

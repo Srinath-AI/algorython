@@ -122,6 +122,35 @@ def treap_split(node, data):
     return node.left, node.right
 
 
+def merge_sorted_iter(iter1, iter2):
+    head1, head2 = None, None
+    while True:
+        if head1 is None:
+            try:
+                head1 = next(iter1)
+            except StopIteration:
+                if head2 is not None:
+                    yield head2
+                yield from iter2
+                return
+
+        if head2 is None:
+            try:
+                head2 = next(iter2)
+            except StopIteration:
+                if head1 is not None:
+                    yield head1
+                yield from iter1
+                return
+
+        if head2 < head1:
+            yield head2
+            head2 = None
+        else:
+            yield head1
+            head1 = None
+
+
 class Treap(BSTreeMixin, BaseTree):
     __slots__ = ()
     node_type = TreapNode
@@ -142,6 +171,16 @@ class Treap(BSTreeMixin, BaseTree):
         return removed
 
     def split(self, data):
+        """
+        Destroy self and split self into two tree by data in O(log n).
+
+        The data in first tree is less equal to data.
+        The data in second tree is greater than data.
+        """
         left, right = treap_split(self.root, data)
         self.root = None
         return Treap(left), Treap(right)
+
+    def union(self, other: BaseTree):
+        """Union in O(m+n)"""
+        return self.from_sorted(merge_sorted_iter(self.data_iter(), other.data_iter()))
