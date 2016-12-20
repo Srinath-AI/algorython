@@ -72,3 +72,8 @@ def test_treap_split():
             left, right = tree.deepcopy().split(num)
             assert is_treap(left) and is_treap(right)
             assert list(chain(left.data_iter(), right.data_iter())) == nums
+
+        left, right = tree.deepcopy().split(min(nums, default=0) - 1)
+        assert left.root is None and list(right.data_iter()) == nums
+        left, right = tree.deepcopy().split(max(nums, default=0) + 1)
+        assert right.root is None and list(left.data_iter()) == nums
