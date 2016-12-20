@@ -1,6 +1,9 @@
+from itertools import chain
+
 from algo.tests.utils import (
     gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
-    run_bstree_remove_test,)
+    run_bstree_remove_test, timeit,
+)
 from algo.tree.bstree import is_bstree
 from algo.tree.treap import Treap, TreapNode, is_treap
 
@@ -59,3 +62,13 @@ def test_treap_from_sorted():
         tree = Treap.from_sorted(iter(case))
         assert is_treap(tree) and is_bstree(tree)
         assert list(tree.data_iter()) == case
+
+
+@timeit('Treap::split')
+def test_treap_split():
+    for tree, _ in gen_treap_by_insert(7):     # type: Treap
+        nums = [ data for data in tree.data_iter() ]
+        for num in nums:
+            left, right = tree.deepcopy().split(num)
+            assert is_treap(left) and is_treap(right)
+            assert list(chain(left.data_iter(), right.data_iter())) == nums

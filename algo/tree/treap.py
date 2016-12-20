@@ -109,6 +109,19 @@ def treap_remove_data(node, data):
             return node, removed
 
 
+def treap_split(node, data):
+    """
+    :type node: TreapNode
+    :rtype (TreapNode, TreapNode)
+    """
+    new_node = TreapNode(data)
+    new_node.priority = float('-inf')
+    node = treap_insert_node(node, new_node)
+    assert node is new_node
+    # node.left.data <= data and node.right.data > data
+    return node.left, node.right
+
+
 class Treap(BaseTree):
     __slots__ = ()
     node_type = TreapNode
@@ -130,3 +143,8 @@ class Treap(BaseTree):
     def remove(self, data):
         self.root, removed = treap_remove_data(self.root, data)
         return removed
+
+    def split(self, data):
+        left, right = treap_split(self.root, data)
+        self.root = None
+        return Treap(left), Treap(right)
