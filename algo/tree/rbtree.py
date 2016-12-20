@@ -1,5 +1,5 @@
 from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
-from algo.tree.bstree import bst_find
+from algo.tree.bstree import BSTreeMixin
 
 
 def rb_color_of(node):
@@ -261,12 +261,9 @@ def rb_remove(node, data):
         return node, removed, need_fix
 
 
-class RBTree(BaseTree):
+class RBTree(BSTreeMixin, BaseTree):
     __slots__ = ()
     node_type = RBNode
-
-    def find(self, data):
-        return bst_find(self.root, data)
 
     def insert(self, data):
         new_node = self.node_type(data, color=RBNode.RED)

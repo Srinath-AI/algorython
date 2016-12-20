@@ -90,13 +90,13 @@ def test_bst_remove():
             assert tree.count() == count
 
 
-@timeit('BSTree::min() & BSTree::max()')
+@timeit('BSTree::min_node() & BSTree::max_node()')
 def test_bst_max_min():
     for root in gen_bst(4):
         tree = BSTree(root)
         if root:
-            assert tree.min() is next(tree.node_iter())
-            assert tree.max() is list(tree.node_iter())[-1]
+            assert tree.min_node() is next(tree.node_iter())
+            assert tree.max_node() is list(tree.node_iter())[-1]
         else:
-            assert tree.min() is None
-            assert tree.max() is None
+            assert tree.min_node() is None
+            assert tree.max_node() is None

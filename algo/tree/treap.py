@@ -1,7 +1,7 @@
 import random
 
 from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
-from algo.tree.bstree import bst_find
+from algo.tree.bstree import BSTreeMixin
 
 
 # treap = minimum heap + binary search tree
@@ -122,7 +122,7 @@ def treap_split(node, data):
     return node.left, node.right
 
 
-class Treap(BaseTree):
+class Treap(BSTreeMixin, BaseTree):
     __slots__ = ()
     node_type = TreapNode
 
@@ -131,9 +131,6 @@ class Treap(BaseTree):
         tree = cls()
         tree.root = treap_root_from_sorted(sorted_stream)
         return tree
-
-    def find(self, data):
-        return bst_find(self.root, data)
 
     def insert(self, data):
         new_node = self.node_type(data)

@@ -1,7 +1,7 @@
 import random
 
 from algo.tree.basetree import BaseNode, BaseTree, rotate_left, rotate_right
-from algo.tree.bstree import bst_find
+from algo.tree.bstree import BSTreeMixin
 
 
 def rst_size_of(node):
@@ -127,12 +127,9 @@ def rst_remove_data(node, data):
             return node, removed
 
 
-class RSTree(BaseTree):
+class RSTree(BSTreeMixin, BaseTree):
     __slots__ = ()
     node_type = RSNode
-
-    def find(self, data):
-        return bst_find(self.root, data)
 
     def insert(self, data):
         new_node = self.node_type(data)

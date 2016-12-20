@@ -69,7 +69,35 @@ def bst_find_all(node, data):
             node = node.right
 
 
-class BSTree(BaseTree):
+class BSTreeMixin:
+    def find(self: BaseTree, data):
+        return bst_find(self.root, data)
+
+    def find_all(self: BaseTree, data):
+        yield from bst_find_all(self.root, data)
+
+    def min_node(self: BaseTree):
+        if self.root is None:
+            return None
+
+        c = self.root
+        while c.left is not None:
+            c = c.left
+
+        return c
+
+    def max_node(self: BaseTree):
+        if self.root is None:
+            return None
+
+        c = self.root
+        while c.right is not None:
+            c = c.right
+
+        return c
+
+
+class BSTree(BSTreeMixin, BaseTree):
     __slots__ = ()
     node_type = BSNode
 
@@ -77,12 +105,6 @@ class BSTree(BaseTree):
         node = self.node_type(data)
         self.root = bst_insert_node(self.root, node)
         return node
-
-    def find(self, data):
-        return bst_find(self.root, data)
-
-    def find_all(self, data):
-        yield from bst_find_all(self.root, data)
 
     def remove(self, data):
         cur, parent, pp = self.root, None, None
@@ -119,23 +141,3 @@ class BSTree(BaseTree):
 
         target.left = target.right = None
         return target
-
-    def min(self):
-        if self.root is None:
-            return None
-
-        c = self.root
-        while c.left is not None:
-            c = c.left
-
-        return c
-
-    def max(self):
-        if self.root is None:
-            return None
-
-        c = self.root
-        while c.right is not None:
-            c = c.right
-
-        return c
