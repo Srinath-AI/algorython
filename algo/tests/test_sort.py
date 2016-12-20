@@ -9,25 +9,25 @@ from algo.tests.utils import (
 )
 
 
-sort_funcs = (
+sort_funcs = [
     dict(func=qsort3, name='qsort3+head'),
     dict(func=partial(qsort3, part_func=qsort_part3_alt), name='qsort3+alt'),
-    dict(func=partial(qsort3, part_func=qsort_part3_random), name='qsort3+rand'),
+    dict(func=partial(qsort3, part_func=qsort_part3_random), name='qsort3+rand', is_random=True),
     dict(func=partial(qsort, part_func=qsort_part_head), name='qsort+head'),
     dict(func=partial(qsort, part_func=qsort_part_tail), name='qsort+tail'),
     dict(func=partial(qsort, part_func=qsort_part_hoare_like), name='qsort+hoare'),
-    dict(func=partial(qsort, part_func=qsort_part_random), name='qsort+rand'),
+    dict(func=partial(qsort, part_func=qsort_part_random), name='qsort+rand', is_random=True),
     dict(func=heap_sort),
     dict(func=merge_sort, stable=True),
     dict(func=bucket_sort, stable=True),
     dict(func=partial(bucket_sort, bucket_size=1), name='bucket_sort+size=1', stable=True),
     dict(func=partial(tree_sort, tree_type=RBTree), name='tree_sort+rbtree', stable=True),
     dict(func=partial(tree_sort, tree_type=AVLTree), name='tree_sort+avltree', stable=True),
-    dict(func=partial(tree_sort, tree_type=Treap), name='tree_sort+treap', stable=True),
-    dict(func=partial(tree_sort, tree_type=RSTree), name='tree_sort+rstree', stable=True),
+    dict(func=partial(tree_sort, tree_type=Treap), name='tree_sort+treap', stable=True, is_random=True),
+    dict(func=partial(tree_sort, tree_type=RSTree), name='tree_sort+rstree', stable=True, is_random=True),
     dict(func=partial(tree_sort, tree_type=BSTree), name='tree_sort+bstree', stable=True, skip_large=True),
     dict(func=list.sort, name='list.sort', stable=True),
-)
+]
 
 
 def test_sort():
