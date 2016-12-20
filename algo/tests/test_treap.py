@@ -1,6 +1,7 @@
 from algo.tests.utils import (
     gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
     run_bstree_remove_test,)
+from algo.tree.bstree import is_bstree
 from algo.tree.treap import Treap, TreapNode, is_treap
 
 
@@ -48,3 +49,13 @@ def test_treap_insert_large():
 
 def test_treap_remove():
     run_bstree_remove_test(7, gen_treap_by_insert, is_treap, 'Treap::remove()')
+
+
+def test_treap_from_sorted():
+    cases = [ list(range(end)) for end in range(20) ]
+    cases.extend([ list(range(0, x * 50, 50)) for x in range(20) ])
+
+    for case in cases:
+        tree = Treap.from_sorted(iter(case))
+        assert is_treap(tree) and is_bstree(tree)
+        assert list(tree.data_iter()) == case

@@ -36,6 +36,29 @@ class TreapNode(BaseNode):
         return '{self.data}|p={self.priority:.3f}'.format_map(locals())
 
 
+def treap_root_from_sorted(sorted_stream):
+    try:
+        stack = [TreapNode(next(sorted_stream))]
+    except StopIteration:
+        return None
+
+    while True:
+        try:
+            new_node = TreapNode(next(sorted_stream))
+        except StopIteration:
+            return stack[0]
+
+        assert stack[-1].right is None
+        stack[-1].right = new_node
+        stack.append(new_node)
+        while len(stack) >= 2 and stack[-1].priority < stack[-2].priority:
+            ch, p = stack.pop(), stack.pop()
+            p = rotate_left(p)
+            if stack:
+                stack[-1].right = p
+            stack.append(p)
+
+
 def treap_insert_node(node, new_node):
     """
     :type node: TreapNode
@@ -89,6 +112,12 @@ def treap_remove_data(node, data):
 class Treap(BaseTree):
     __slots__ = ()
     node_type = TreapNode
+
+    @classmethod
+    def from_sorted(cls, sorted_stream):
+        tree = cls()
+        tree.root = treap_root_from_sorted(sorted_stream)
+        return tree
 
     def find(self, data):
         return bst_find(self.root, data)
