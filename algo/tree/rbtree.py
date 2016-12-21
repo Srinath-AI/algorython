@@ -57,7 +57,7 @@ class RBNode(BaseNode):
         self.color = color
 
     def _short_repr_(self):
-        dot = { RBNode.BLACK: '■', RBNode.RED: '□' }[self.color]
+        dot = { RBNode.BLACK: '●', RBNode.RED: '○' }[self.color]
         return '{dot}{self.data}'.format_map(locals())
 
     def _add_to_graphviz(self, g, name):
