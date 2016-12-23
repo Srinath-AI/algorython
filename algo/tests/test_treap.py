@@ -2,7 +2,7 @@ from itertools import chain
 
 from algo.tests.utils import (
     gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
-    run_bstree_remove_test, timeit,
+    run_bstree_remove_test, run_bstree_remove_test_large, timeit,
 )
 from algo.tree.bstree import is_bstree
 from algo.tree.treap import Treap, TreapNode, is_treap
@@ -52,6 +52,10 @@ def test_treap_insert_large():
 
 def test_treap_remove():
     run_bstree_remove_test(7, gen_treap_by_insert, is_treap, 'Treap::remove()')
+
+
+def test_treap_remove_large():
+    run_bstree_remove_test_large(1000, Treap, is_treap, 'Treap::remove() large case')
 
 
 def test_treap_from_sorted():
