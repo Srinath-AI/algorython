@@ -6,7 +6,7 @@ from time import perf_counter
 import functools
 
 from algo.heap import heap_left, heap_right
-from algo.tree.basetree import print_tree
+from algo.tree.basetree import print_tree, BaseTree
 from algo.tree.bstree import BSNode, is_bstree
 
 
@@ -449,7 +449,12 @@ def run_bstree_remove_test(maxsize, gen_bstree, verifier, desc):
         flatten = list(t.data_iter())
         for to_remove in sorted(set(flatten)):
             test_tree = t.deepcopy()
-            removed_node = test_tree.remove(to_remove)
+            try:
+                removed_node = test_tree.remove(to_remove)
+            except Exception:
+                print_failing(t, to_remove, test_tree)
+                raise
+
             assert removed_node.data == to_remove \
                    and list(test_tree.data_iter()) == removed_one(flatten, to_remove) \
                    and verifier(test_tree) \
@@ -468,3 +473,22 @@ def run_bstree_remove_test(maxsize, gen_bstree, verifier, desc):
     case_per_sec = tree_count / get_duration()
     print('maxsize: {maxsize}, cases: {tree_count}, case_per_sec: {case_per_sec:.1f}'
           .format_map(locals()))
+
+
+def run_bstree_remove_test_large(size, tree_type, verifier, desc):
+    arr = [ random.randrange(size * 0.9) for _ in range(size) ]
+    sorted_arr = sorted(arr)
+
+    tree = tree_type()  # type: BaseTree
+    for x in arr:
+        tree.insert(x)
+
+    random.shuffle(arr)
+    to_remove = arr[:size // 3]
+
+    for x in set(to_remove):
+        test_tree = tree.deepcopy()
+        assert test_tree.remove(x).data == x
+        arr_removed = sorted_arr.copy()
+        arr_removed.remove(x)
+        assert list(test_tree.data_iter()) == arr_removed
