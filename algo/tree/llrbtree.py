@@ -18,8 +18,8 @@ def is_llrbtree(tree: BaseTree):
             if not (rb_color_of(node.left) == rb_color_of(node.right) == RBNode.BLACK):
                 raise NotLLRBTree
         else:
-            if rb_color_of(node.right) == RBNode.RED != rb_color_of(node.left):
-                # right leanning
+            if rb_color_of(node.right) == RBNode.RED:
+                # right leanning or 4-nodes
                 raise NotLLRBTree
 
         lcount = check(node.left)
@@ -58,12 +58,6 @@ def llrb_insert_node(node: RBNode, new_node: RBNode) -> RBNode:
         assert new_node.color == RBNode.RED
         return new_node
 
-    # split 4-nodes on the way down by filp color
-    if node.color == RBNode.BLACK and rb_color_of(node.right) == RBNode.RED:
-        assert node.left.color == RBNode.RED
-        node.color = RBNode.RED
-        node.left.color = node.right.color = RBNode.BLACK
-
     if new_node.data < node.data:
         node.left = llrb_insert_node(node.left, new_node)
     else:
@@ -77,6 +71,12 @@ def llrb_insert_node(node: RBNode, new_node: RBNode) -> RBNode:
     if rb_color_of(node.left) == RBNode.RED and rb_color_of(node.left.left) == RBNode.RED:
         assert node.color == RBNode.BLACK
         node = llrb_rotate_right(node)
+
+    # split 4-nodes on the way up by flipping color
+    if node.color == RBNode.BLACK and rb_color_of(node.right) == RBNode.RED:
+        assert node.left.color == RBNode.RED
+        node.color = RBNode.RED
+        node.left.color = node.right.color = RBNode.BLACK
 
     return node
 
