@@ -1,6 +1,6 @@
 from algo.tests.utils import (
     gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
-    run_bstree_remove_test, run_bstree_remove_test_large,
+    run_bstree_remove_test, run_bstree_remove_test_large, run_bstree_insert_remove_mix,
 )
 from algo.tree.rbtree import RBTree, RBNode, is_rbtree
 
@@ -90,3 +90,7 @@ def test_rbtree_remove():
 
 def test_rbtree_remove_large():
     run_bstree_remove_test_large(1000, RBTree, is_rbtree, 'RBTree::remove() large case')
+
+
+def test_rbtree_remove_insert_mix():
+    run_bstree_insert_remove_mix(1000, RBTree, is_rbtree, 'RBTree insertion & removal')

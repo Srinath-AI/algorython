@@ -492,3 +492,35 @@ def run_bstree_remove_test_large(size, tree_type, verifier, desc):
         arr_removed = sorted_arr.copy()
         arr_removed.remove(x)
         assert list(test_tree.data_iter()) == arr_removed
+
+
+def run_bstree_insert_remove_mix(size, tree_type, verifier, desc):
+    arr = [ random.randrange(size * 0.9) for _ in range(size) ]
+    inserted = []
+
+    tree = tree_type()  # type: BaseTree
+
+    def remove_one():
+        remove_idx = random.randrange(len(inserted))
+        inserted[-1], inserted[remove_idx] = inserted[remove_idx], inserted[-1]
+        to_remove = inserted.pop()
+        removed_node = tree.remove(to_remove)
+        assert removed_node.data == to_remove
+        assert verifier(tree)
+
+    # grow
+    for i, x in enumerate(arr):
+        inserted.append(x)
+        tree.insert(x)
+        assert verifier(tree)
+        if i % 2 == 0:
+            remove_one()
+
+    # shrink
+    random.shuffle(arr)
+    rand_gen = iter(arr)
+    while inserted:
+        remove_one()
+        tree.insert(next(rand_gen))
+        assert verifier(tree)
+        remove_one()

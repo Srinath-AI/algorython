@@ -2,7 +2,8 @@ from itertools import chain
 
 from algo.tests.utils import (
     gen_bstree_by_insert, run_bstree_insert_test, run_bstree_insert_test_large,
-    run_bstree_remove_test, run_bstree_remove_test_large, timeit,
+    run_bstree_remove_test, run_bstree_remove_test_large, run_bstree_insert_remove_mix,
+    timeit,
 )
 from algo.tree.bstree import is_bstree
 from algo.tree.treap import Treap, TreapNode, is_treap
@@ -90,3 +91,7 @@ def test_treap_union():
             union = prev.union(tree)
             assert list(union.data_iter()) == sorted(list(tree.data_iter()) + list(prev.data_iter()))
         prev = tree
+
+
+def test_treap_remove_insert_mix():
+    run_bstree_insert_remove_mix(1000, Treap, is_treap, 'Treap insertion & removal')
