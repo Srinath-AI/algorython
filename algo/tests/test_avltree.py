@@ -34,8 +34,8 @@ def test_is_avltree():
         (True, (None, (None, None))),
         (False, ((None, (None, None)), None)),
         (False, (((None, None), None), None)),
-        (False, ((None, (None, None)), (None, None))),
-        (False, ((None, None), ((None, None), None))),
+        (True, ((None, (None, None)), (None, None))),
+        (True, ((None, None), ((None, None), None))),
         (True, (((None, None), None), (None, None))),
     ]
 
