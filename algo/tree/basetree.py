@@ -244,6 +244,9 @@ class BaseTree:
         tree.root = cls.node_type.from_heap(heap)
         return tree
 
+    def clear(self):
+        self.root = None
+
     def deepcopy(self):
         return self.__class__(self.root.deepcopy() if self.root is not None else None)
 
