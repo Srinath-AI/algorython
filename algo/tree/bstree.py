@@ -96,6 +96,29 @@ class BSTreeMixin:
 
         return c
 
+    def isdisjoint(self, other) -> bool:
+        smin, smax = self.min_node().data, self.max_node().data
+        omin, omax = other.min_node().data, other.max_node().data
+        if smax < omin or omax < smin:
+            # fast path
+            return True
+
+        other_iter = other.data_iter()
+        other_value = None
+        for value in self.data_iter():
+            while True:
+                if other_value is None or other_value < value:
+                    try:
+                        other_value = next(other_iter)
+                    except StopIteration:
+                        return True
+
+                if other_value == value:
+                    return False
+                elif other_value > value:
+                    break
+        return True
+
 
 class BSTree(BSTreeMixin, BaseTree):
     __slots__ = ()
