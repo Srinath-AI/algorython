@@ -168,6 +168,8 @@ def gen_special_sort_case(size):
             descending99[i] = random.randint(-10086, +10086)
         del i, p
 
+    rand_dup20 = [ random.randrange(int(size * 0.9)) for x in range(size) ]
+
     del size, pattern
     return OrderedDict(sorted(locals().items()))
 
