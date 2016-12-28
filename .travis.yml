@@ -22,13 +22,13 @@ install:
   - pip install pytest-sugar
   - pip install pytest-cov
   - pip install coveralls
+  - pip install codecov
   - pip install codeclimate-test-reporter
 
 # command to run tests
 script:
-  pytest -s --verbose --cov=algo algo/tests/ && coveralls && codeclimate-test-reporter
+  pytest -s --verbose --cov=algo --cov-branch algo/tests/ && codecov && coveralls && codeclimate-test-reporter
 
 # run performance test without profiling
 after_success:
   pytest -s --verbose algo/tests/perf/
-
