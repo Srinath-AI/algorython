@@ -27,7 +27,7 @@ install:
 
 # command to run tests
 script:
-  pytest -s --verbose --cov=algo --cov-branch algo/tests/ && codecov && coveralls && codeclimate-test-reporter
+  pytest -s --verbose --cov=algo algo/tests/ && codecov && coveralls && codeclimate-test-reporter
 
 # run performance test without profiling
 after_success:
