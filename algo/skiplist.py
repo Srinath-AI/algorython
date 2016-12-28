@@ -27,31 +27,19 @@ def sl_insert_node(node: SLNode, new_node: SLNode):
     for next_node in reversed(node.tower):
         if next_node is not None and next_node.data <= new_node.data:
             sl_insert_node(next_node, new_node)
-            if len(new_node.tower) > len(next_node.tower) < len(node.tower):
-                # fix
-                to_fix = slice(len(next_node.tower), len(new_node.tower))
-                node.tower[to_fix] = [new_node] * len(node.tower[to_fix])
+            # link node to new_node
+            for i in range(len(next_node.tower), min(len(new_node.tower), len(node.tower))):
+                new_node.tower[i] = node.tower[i]
+                node.tower[i] = new_node
             return
 
     # insert new_node here
     assert node.data <= new_node.data
-    if node.tower[0] is not None:
-        assert node.tower[0].data > new_node.data
-
-    # set new_node.tower
-    next_node = node.tower[0]   # type: SLNode
-    for i in range(len(new_node.tower)):
-        if next_node is None:
-            break
-
-        if i >= len(next_node.tower):
-            # find a higher tower
-            while next_node is not None and len(next_node.tower) <= i:
-                next_node = next_node.tower[0]
-        new_node.tower[i] = next_node
+    assert node.tower[0] is None or node.tower[0].data > new_node.data
 
     # link node to new_node
     for i in range(min(len(new_node.tower), len(node.tower))):
+        new_node.tower[i] = node.tower[i]
         node.tower[i] = new_node
 
 
@@ -80,7 +68,7 @@ class SkipList:
     def insert(self, data):
         new_node = SLNode(data, height=sl_height())
         sl_insert_node(self.head, new_node)
-        extended =  len(new_node.tower) - len(self.head.tower)
+        extended = len(new_node.tower) - len(self.head.tower)
         if extended > 0:
             # increase height of head
             self.head.tower.extend([new_node] * extended)
