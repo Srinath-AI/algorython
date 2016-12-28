@@ -51,11 +51,11 @@ def test_pretty_tree():
     R, B = RBNode.RED, RBNode.BLACK
     tree = rbtree_from_nested_list([B, B, [B, R, R]])
     ans = '''
-       ■1
+       ●1
    ┌───┴───────┐
-   ■0          ■3
+   ●0          ●3
  ┌─┴─┐     ┌───┴───┐
-NIL NIL    □2      □4
+NIL NIL    ○2      ○4
          ┌─┴─┐   ┌─┴─┐
         NIL NIL NIL NIL'''
 
@@ -65,7 +65,7 @@ NIL NIL    □2      □4
     tree = RBTree()
     tree.insert(+8601010086)
     ans = '''
-■8601010086
+●8601010086
    ┌─┴─┐
   NIL NIL'''
 
