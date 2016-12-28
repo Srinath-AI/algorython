@@ -43,7 +43,7 @@ def test_repr_svg():
 
 def test_pretty_tree():
     from algo.tree.rbtree import RBNode
-    from algo.tests.test_rbtree import rbtree_from_nested_list
+    from algo.tests.tree.test_rbtree import rbtree_from_nested_list
 
     def process(string):
         return [ line.rstrip() for line in string.splitlines() if line.strip() ]

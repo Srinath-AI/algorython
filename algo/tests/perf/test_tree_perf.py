@@ -4,7 +4,7 @@ import statistics
 import random
 
 from algo.tests.utils import gen_special_sort_case, timed_test, print_matrix, print_histogram
-from algo.tests.test_tree import all_trees
+from algo.tests.tree.test_tree import all_trees
 
 
 def measure_nil_depth(tree):
