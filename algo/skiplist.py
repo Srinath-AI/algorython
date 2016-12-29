@@ -9,18 +9,15 @@ class SLNode:
         self.data = data
 
 
-def sl_height():
-    # TODO: adjustable prob
-    # height can not exceed 32
-    u32 = random.getrandbits(32)
-    # count continuous ones
-    ans = 0
-    while u32 % 2 == 1:
+def sl_height(p=0.5):
+    ans = 1
+    rand = random.random()
+    threshold = p
+    while rand < threshold:
         ans += 1
-        u32 >>= 1
+        threshold *= p
 
-    # height is at least 1
-    return ans + 1
+    return ans
 
 
 def sl_insert_node(node: SLNode, new_node: SLNode):

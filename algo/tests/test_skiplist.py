@@ -1,7 +1,10 @@
 import random
+import math
+import statistics
+from collections import defaultdict
 
 from algo.container.treeset import MultiTreeSet
-from algo.skiplist import SkipList, SLNode
+from algo.skiplist import SkipList, SLNode, sl_height
 from algo.tests.utils import timed_test, check_repr_svg, gen_special_sort_case
 
 
@@ -24,6 +27,17 @@ def sl_verify(sl: SkipList):
     run(sl.head)
     # check sl.head too tall
     assert all(next_node is not None for next_node in sl.head.tower[1:])
+
+
+def test_sl_height_distribution():
+    p = 0.25
+    d = defaultdict(int)
+    for _ in range(1000000):
+        d[sl_height(p)] += 1
+
+    threshold = max(d.keys()) // 2
+    norm = [ math.log(d[x], 1 / p) + x for x in range(1, threshold) ]
+    assert statistics.stdev(norm) < 0.01
 
 
 def test_skiplist_insert():
