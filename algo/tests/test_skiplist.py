@@ -1,5 +1,6 @@
 import random
 
+from algo.container.treeset import MultiTreeSet
 from algo.skiplist import SkipList, SLNode
 from algo.tests.utils import timed_test, check_repr_svg, gen_special_sort_case
 
@@ -21,6 +22,8 @@ def sl_verify(sl: SkipList):
         project[:len(node.tower)] = [node] * len(node.tower)
 
     run(sl.head)
+    # check sl.head too tall
+    assert all(next_node is not None for next_node in sl.head.tower[1:])
 
 
 def test_skiplist_insert():
@@ -35,6 +38,37 @@ def test_skiplist_insert():
                 sl.insert(x)
                 sl_verify(sl)
                 assert list(sl.data_iter()) == sorted(case[:(i + 1)])
+
+
+def test_skiplist_remove():
+    rand_case = gen_special_sort_case(900)['rand_dup20']
+
+    sorted_case = sorted(rand_case)
+    shuffled_case = rand_case.copy()
+    random.shuffle(shuffled_case)
+
+    remove_orders = dict(
+        ascending=sorted_case,
+        descending=list(reversed(sorted_case)),
+        origin=rand_case,
+        random=shuffled_case
+    )
+
+    for name, case in remove_orders.items():
+        all_nums = MultiTreeSet(rand_case)
+        sl = SkipList()
+        for x in rand_case:
+            sl.insert(x)
+        sl_verify(sl)
+
+        with timed_test('SkipList::remove(), {name}'.format_map(locals())):
+            for x in case:
+                removed = sl.remove(x)
+                assert removed.data == x
+                sl_verify(sl)
+
+                all_nums.remove(x)
+                assert list(sl.data_iter()) == list(all_nums)
 
 
 def test_skiplist_to_svg():

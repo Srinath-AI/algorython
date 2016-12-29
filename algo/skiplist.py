@@ -43,9 +43,31 @@ def sl_insert_node(node: SLNode, new_node: SLNode):
         node.tower[i] = new_node
 
 
+def sl_remove(node: SLNode, data) -> SLNode:
+    for next_node in reversed(node.tower):
+        if next_node is not None and next_node.data < data:
+            removed = sl_remove(next_node, data)
+            if removed is not None:
+                assert removed is not next_node
+                for i in range(len(next_node.tower), min(len(removed.tower), len(node.tower))):
+                    node.tower[i] = removed.tower[i]
+
+            return removed
+
+    assert node.tower[0] is None or node.tower[0].data >= data
+
+    if node.tower[0] is not None and node.tower[0].data == data:
+        removed = node.tower[0]
+        for i in range(min(len(node.tower), len(removed.tower))):
+            node.tower[i] = removed.tower[i]
+        return removed
+    else:
+        return None
+
+
 class SkipList:
     def __init__(self):
-        self.head = SLNode(float('-inf'))
+        self.head = SLNode(float('-inf'), height=1)
 
     def data_iter(self):
         cur = self.head
@@ -73,6 +95,13 @@ class SkipList:
             # increase height of head
             self.head.tower.extend([new_node] * extended)
         return new_node
+
+    def remove(self, data):
+        removed = sl_remove(self.head, data)
+        while len(self.head.tower) > 1 and self.head.tower[-1] is None:
+            # decrease height of head
+            self.head.tower.pop()
+        return removed
 
     def _repr_svg_(self):
         return self._to_graphviz()._repr_svg_()
