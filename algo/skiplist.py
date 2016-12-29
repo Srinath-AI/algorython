@@ -63,8 +63,10 @@ def sl_remove(node: SLNode, data) -> SLNode:
 
 
 class SkipList:
-    def __init__(self):
+    def __init__(self, prob=0.5):
         self.head = SLNode(float('-inf'), height=1)
+        assert 0 < prob < 1
+        self.prob = prob
 
     def data_iter(self):
         cur = self.head
@@ -85,7 +87,7 @@ class SkipList:
                 return node
 
     def insert(self, data):
-        new_node = SLNode(data, height=sl_height())
+        new_node = SLNode(data, height=sl_height(self.prob))
         sl_insert_node(self.head, new_node)
         extended = len(new_node.tower) - len(self.head.tower)
         if extended > 0:
