@@ -9,11 +9,11 @@ class SLNode:
         self.data = data
 
 
-def sl_height(p=0.5):
+def sl_height(p=0.5, _max_height=32):
     ans = 1
     rand = random.random()
     threshold = p
-    while rand < threshold:
+    while rand < threshold and ans < _max_height:
         ans += 1
         threshold *= p
 
@@ -86,7 +86,7 @@ class SkipList:
         while old_node is not None:
             new_node = old2new[id(old_node)]
             new_node.tower = [ old2new[id(next_node)] if next_node is not None else None
-                            for next_node in old_node.tower ]
+                               for next_node in old_node.tower ]
             old_node = old_node.tower[0]
 
         new_sl = self.__class__(prob=self.prob)
