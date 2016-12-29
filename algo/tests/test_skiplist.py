@@ -3,8 +3,8 @@ import math
 import statistics
 from collections import defaultdict
 
-from algo.container.treeset import MultiTreeSet
 from algo.skiplist import SkipList, SLNode, sl_height
+from algo.container.treeset import MultiTreeSet
 from algo.tests.utils import timed_test, check_repr_svg, gen_special_sort_case
 
 

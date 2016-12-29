@@ -68,6 +68,10 @@ class SkipList:
         assert 0 < prob < 1
         self.prob = prob
 
+    @property
+    def mean_height(self):
+        return 1 / self.prob
+
     def node_iter(self):
         cur = self.head
         while cur.tower[0] is not None:
