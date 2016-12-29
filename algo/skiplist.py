@@ -73,6 +73,26 @@ class SkipList:
     def mean_height(self):
         return 1 / self.prob
 
+    def deepcopy(self):
+        # create new node and set up mapping between old and new
+        old2new = dict()
+        old_node = self.head
+        while old_node is not None:
+            old2new[id(old_node)] = old_node.__class__(old_node.data)
+            old_node = old_node.tower[0]
+
+        # update new node's tower
+        old_node = self.head
+        while old_node is not None:
+            new_node = old2new[id(old_node)]
+            new_node.tower = [ old2new[id(next_node)] if next_node is not None else None
+                            for next_node in old_node.tower ]
+            old_node = old_node.tower[0]
+
+        new_sl = self.__class__(prob=self.prob)
+        new_sl.head = old2new[id(self.head)]
+        return new_sl
+
     def node_iter(self):
         cur = self.head
         while cur.tower[0] is not None:

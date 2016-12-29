@@ -89,6 +89,17 @@ def test_skiplist_remove_find():
                 assert list(sl.data_iter()) == list(all_nums)
 
 
+def test_skiplist_copy():
+    sl = SkipList()
+    case = gen_special_sort_case(900)['rand_dup20']
+    for x in case:
+        sl.insert(x)
+    sl = sl.deepcopy()
+
+    sl_verify(sl)
+    assert list(sl.data_iter()) == sorted(case)
+
+
 def test_skiplist_to_svg():
     sl = SkipList()
     check_repr_svg(sl)
