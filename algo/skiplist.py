@@ -68,11 +68,15 @@ class SkipList:
         assert 0 < prob < 1
         self.prob = prob
 
-    def data_iter(self):
+    def node_iter(self):
         cur = self.head
         while cur.tower[0] is not None:
             cur = cur.tower[0]
-            yield cur.data
+            yield cur
+
+    def data_iter(self):
+        for node in self.node_iter():
+            yield node.data
 
     def find(self, data):
         node = self.head
