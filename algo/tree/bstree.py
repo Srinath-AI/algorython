@@ -96,10 +96,14 @@ class BSTreeMixin:
 
         return c
 
+    def _min_max_not_overlap(self, other) -> bool:
+        return (
+            self.max_node().data < other.min_node().data
+            or other.max_node().data < self.min_node().data
+        )
+
     def isdisjoint(self, other) -> bool:
-        smin, smax = self.min_node().data, self.max_node().data
-        omin, omax = other.min_node().data, other.max_node().data
-        if smax < omin or omax < smin:
+        if self._min_max_not_overlap(other):
             # fast path
             return True
 
