@@ -63,7 +63,7 @@ def sl_remove(node: SLNode, data) -> SLNode:
 
 
 class SkipList:
-    def __init__(self, prob=0.5):
+    def __init__(self, *, prob=0.5):
         self.head = SLNode(float('-inf'), height=1)
         assert 0 < prob < 1
         self.prob = prob
