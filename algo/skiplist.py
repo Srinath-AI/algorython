@@ -29,9 +29,10 @@ def sl_insert_node(node: SLNode, new_node: SLNode):
                 new_node.tower[i] = node.tower[i]
                 node.tower[i] = new_node
             return
-
     # insert new_node here
-    assert node.data <= new_node.data
+
+    # do not compare with head.data since new_node.data may be wrapped
+    # assert node.data <= new_node.data
     assert node.tower[0] is None or node.tower[0].data > new_node.data
 
     # link node to new_node
