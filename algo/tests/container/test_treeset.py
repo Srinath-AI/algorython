@@ -1,20 +1,18 @@
 import unittest
 import pytest
 from collections import defaultdict
+from functools import partial
 
 from algo.container.treeset import TreeSet, MultiTreeSet
 from algo.container.abc import MutableSet, MutableMultiSet
+from algo.skiplist import SkipList
 
 
 class BaseTest:
     set_type = None
-    abc = None
 
     def list_equiv(self, iterable):
         raise NotImplementedError
-
-    def test_abc(self):
-        assert issubclass(self.set_type, self.abc)
 
     def test_from_iterable(self):
         def run(iterable):
@@ -173,18 +171,22 @@ class BaseTest:
 
 class TestTreeSet(BaseTest, unittest.TestCase):
     set_type = TreeSet
-    abc = MutableSet
 
     def list_equiv(self, iterable):
         return sorted(set(iterable))
 
+    def test_abc(self):
+        assert issubclass(self.set_type, MutableSet)
+
 
 class TestMultiTreeSet(BaseTest, unittest.TestCase):
     set_type = MultiTreeSet
-    abc = MutableMultiSet
 
     def list_equiv(self, iterable):
         return sorted(iterable)
+
+    def test_abc(self):
+        assert issubclass(self.set_type, MutableMultiSet)
 
     def test_discard_all(self):
         def list_removed_all(lst, elem):
@@ -215,3 +217,18 @@ class TestMultiTreeSet(BaseTest, unittest.TestCase):
 
         run([1])
         run([1, 1, 2, 3, 3, 3])
+
+
+class TestTreeSetWithSkipList(TestTreeSet):
+    set_type = partial(TreeSet, tree_type=SkipList)
+
+    def test_abc(self):
+        # not needed
+        pass
+
+
+class TestMultiTreeSetWithSkipList(TestMultiTreeSet):
+    set_type = partial(MultiTreeSet, tree_type=SkipList)
+
+    def test_abc(self):
+        pass

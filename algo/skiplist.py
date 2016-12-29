@@ -156,6 +156,9 @@ class SkipList:
             self.head.tower.pop()
         return removed
 
+    def clear(self):
+        self.head = SLNode(float('-inf'), height=1)
+
     def _repr_svg_(self):
         return self._to_graphviz()._repr_svg_()
 
