@@ -1,3 +1,5 @@
+from algo.tree.bstree import BSTreeMixin
+
 import random
 
 
@@ -121,6 +123,10 @@ class SkipList:
                     return node
             else:
                 node = next_node
+
+    # borrow from bstree
+    _min_max_not_overlap = BSTreeMixin._min_max_not_overlap
+    isdisjoint = BSTreeMixin.isdisjoint
 
     def find(self, data):
         node = self.head
