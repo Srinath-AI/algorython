@@ -103,6 +103,25 @@ class SkipList:
         for node in self.node_iter():
             yield node.data
 
+    def min_node(self):
+        return self.head.tower[0]
+
+    def max_node(self):
+        node = self.head
+        while True:
+            next_node = None    # no warning
+            for next_node in reversed(node.tower):
+                if next_node is not None:
+                    break
+
+            if next_node is None:
+                if node is self.head:
+                    return None
+                else:
+                    return node
+            else:
+                node = next_node
+
     def find(self, data):
         node = self.head
         while True:

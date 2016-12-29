@@ -100,6 +100,18 @@ def test_skiplist_copy():
     assert list(sl.data_iter()) == sorted(case)
 
 
+def test_skiplist_min_max():
+    sl = SkipList()
+    assert sl.min_node() is None
+    assert sl.max_node() is None
+
+    for x in range(100):
+        sl.insert(x)
+
+    assert sl.min_node().data == 0
+    assert sl.max_node().data == 99
+
+
 def test_skiplist_to_svg():
     sl = SkipList()
     check_repr_svg(sl)
