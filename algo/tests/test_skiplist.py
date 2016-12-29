@@ -40,7 +40,7 @@ def test_skiplist_insert():
                 assert list(sl.data_iter()) == sorted(case[:(i + 1)])
 
 
-def test_skiplist_remove():
+def test_skiplist_remove_find():
     rand_case = gen_special_sort_case(900)['rand_dup20']
 
     sorted_case = sorted(rand_case)
@@ -61,8 +61,12 @@ def test_skiplist_remove():
             sl.insert(x)
         sl_verify(sl)
 
-        with timed_test('SkipList::remove(), {name}'.format_map(locals())):
+        with timed_test('SkipList::remove() & SkipList::find(), {name}'.format_map(locals())):
             for x in case:
+                # test find()
+                found = sl.find(x)
+                assert found.data == x
+
                 removed = sl.remove(x)
                 assert removed.data == x
                 sl_verify(sl)
