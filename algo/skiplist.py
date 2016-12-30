@@ -140,6 +140,32 @@ class SkipList:
             elif node.data == data:
                 return node
 
+    def lower_bound_nodes(self, data):
+        node = self.head
+        while True:
+            next_node = None
+            for candidate in reversed(node.tower):
+                if candidate is not None and candidate.data < data:
+                    next_node = candidate
+                    break
+
+            if next_node is None:
+                # all next_node.data is >= data
+                next_node = node.tower[0]
+                break
+            else:
+                assert next_node.data < data
+                node = next_node
+
+        while next_node is not None:
+            assert next_node.data >= data
+            yield next_node
+            next_node = next_node.tower[0]
+
+    def lower_bound(self, data):
+        for node in self.lower_bound_nodes(data):
+            yield node.data
+
     def insert(self, data):
         new_node = SLNode(data, height=sl_height(self.prob))
         sl_insert_node(self.head, new_node)

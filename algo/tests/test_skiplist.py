@@ -1,6 +1,7 @@
 import random
 import math
 import statistics
+import bisect
 from collections import defaultdict
 
 from algo.skiplist import SkipList, SLNode, sl_height
@@ -87,6 +88,29 @@ def test_skiplist_remove_find():
 
                 all_nums.remove(x)
                 assert list(sl.data_iter()) == list(all_nums)
+
+
+def test_skiplist_lower_bound():
+    def list_lower_bound(lst, data):
+        return lst[bisect.bisect_left(lst, data):]
+
+    assert list_lower_bound([1, 1, 2, 2, 3], 2) == [2, 2, 3]
+    assert list_lower_bound([1, 1, 2, 2, 3], 1.5) == [2, 2, 3]
+
+    def run(col):
+        sl = SkipList()
+        for x in col:
+            sl.insert(x)
+
+        lst = sorted(col)
+        for x in sorted(set(lst)):
+            for data in (x, x + 0.5):
+                assert list(sl.lower_bound(data)) == list_lower_bound(lst, data)
+        assert list(sl.lower_bound(float('-inf'))) == list_lower_bound(lst, float('-inf'))
+
+    for name, case in gen_special_sort_case(900).items():
+        with timed_test('SkipList::lower_bound(), {name}'.format_map(locals())):
+            run(case)
 
 
 def test_skiplist_copy():
