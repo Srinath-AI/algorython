@@ -100,12 +100,17 @@ def test_skiplist_remove_find():
             sl_verify(sl)
 
 
-def test_skiplist_lower_bound():
+def test_skiplist_lower_upper_bound():
     def list_lower_bound(lst, data):
         return lst[bisect.bisect_left(lst, data):]
 
+    def list_upper_bound(lst, data):
+        return list(reversed(lst[:bisect.bisect_right(lst, data)]))
+
     assert list_lower_bound([1, 1, 2, 2, 3], 2) == [2, 2, 3]
     assert list_lower_bound([1, 1, 2, 2, 3], 1.5) == [2, 2, 3]
+    assert list_upper_bound([1, 1, 2, 2, 3], 2) == [2, 2, 1, 1]
+    assert list_upper_bound([1, 1, 2, 2, 3], 1.5) == [1, 1]
 
     def run(col):
         sl = SkipList()
@@ -116,10 +121,16 @@ def test_skiplist_lower_bound():
         for x in sorted(set(lst)):
             for data in (x, x + 0.5):
                 assert list(sl.lower_bound(data)) == list_lower_bound(lst, data)
+                assert list(sl.upper_bound(data)) == list_upper_bound(lst, data)
+
         assert list(sl.lower_bound(float('-inf'))) == list_lower_bound(lst, float('-inf'))
+        assert list(sl.lower_bound(float('+inf'))) == list_lower_bound(lst, float('+inf'))
+        assert list(sl.upper_bound(float('-inf'))) == list_upper_bound(lst, float('-inf'))
+        assert list(sl.upper_bound(float('+inf'))) == list_upper_bound(lst, float('+inf'))
 
     for name, case in gen_special_sort_case(900).items():
-        with timed_test('SkipList::lower_bound(), {name}'.format_map(locals())):
+        with timed_test(('SkipList::lower_bound()'
+                         ' & SkipList::upper_bound(), {name}').format_map(locals())):
             run(case)
 
 

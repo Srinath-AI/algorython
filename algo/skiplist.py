@@ -67,7 +67,7 @@ def sl_remove(node: SLNode, data) -> SLNode:
 
 class SkipList:
     def __init__(self, *, prob=0.5):
-        self.head = SLNode(float('-inf'), height=1)
+        self.head = SLNode(None, height=1)
         assert 0 < prob < 1
         self.prob = prob
 
@@ -166,6 +166,28 @@ class SkipList:
         for node in self.lower_bound_nodes(data):
             yield node.data
 
+    def upper_bound_nodes(self, data):
+        def g(node):
+            prev_next_node = None
+            for next_node in reversed(node.tower):
+                if (
+                    next_node is not prev_next_node
+                    and len(next_node.tower) <= len(node.tower)
+                    and next_node.data <= data
+                ):
+                    yield from g(next_node)
+
+                prev_next_node = next_node
+
+            if node.data is not None and node.data <= data:
+                yield node
+
+        yield from g(self.head)
+
+    def upper_bound(self, data):
+        for node in self.upper_bound_nodes(data):
+            yield node.data
+
     def insert(self, data):
         new_node = SLNode(data, height=sl_height(self.prob))
         sl_insert_node(self.head, new_node)
@@ -183,7 +205,7 @@ class SkipList:
         return removed
 
     def clear(self):
-        self.head = SLNode(float('-inf'), height=1)
+        self.head = SLNode(None, height=1)
 
     def _repr_svg_(self):
         return self._to_graphviz()._repr_svg_()
