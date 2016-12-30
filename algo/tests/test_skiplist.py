@@ -82,12 +82,22 @@ def test_skiplist_remove_find():
                 found = sl.find(x)
                 assert found.data == x
 
+                assert sl.find(x + 0.5) is None     # not exists
+
                 removed = sl.remove(x)
                 assert removed.data == x
                 sl_verify(sl)
 
+                assert sl.remove(x + 0.5) is None   # not exists
+                sl_verify(sl)
+
                 all_nums.remove(x)
                 assert list(sl.data_iter()) == list(all_nums)
+
+            # not exists
+            assert sl.find(float('-inf')) is None
+            assert sl.remove(float('-inf')) is None
+            sl_verify(sl)
 
 
 def test_skiplist_lower_bound():
