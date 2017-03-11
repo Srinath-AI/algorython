@@ -230,12 +230,8 @@ def print_matrix(mat):
 
 
 def print_histogram(pairs, width=80):
-    block_chars = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
-
-    # TODO: handle fullwidth char
-    max_label_len = max(len(str(label)) for label, _ in pairs)
-
     def get_bar(percent, max_width):
+        block_chars = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
         blocks = percent * max_width
         fullblocks = int(blocks)
 
@@ -246,8 +242,18 @@ def print_histogram(pairs, width=80):
 
         return bar
 
+    try:
+        from wcwidth import wcswidth
+    except ImportError:
+        wcswidth = len
+        rjust = str.rjust
+    else:
+        def rjust(string: str, length: int):
+            return ' ' * (length - wcswidth(string)) + string
+
+    max_label_len = max(wcswidth(str(label)) for label, _ in pairs)
     for label, value in pairs:
-        print(str(label).rjust(max_label_len), end='')
+        print(rjust(str(label), max_label_len), end='')
         print(get_bar(value, width - max_label_len))
 
 
