@@ -233,7 +233,7 @@ def print_histogram(pairs, width=80):
     block_chars = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
 
     # TODO: handle fullwidth char
-    max_label_len = len(str(max(pairs, key=lambda x: len(str(x[0])))[0]))
+    max_label_len = max(len(str(label)) for label, _ in pairs)
 
     def get_bar(percent, max_width):
         blocks = percent * max_width
