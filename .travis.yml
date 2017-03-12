@@ -19,11 +19,8 @@ dist: trusty
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - pip install pytest-sugar
-  - pip install pytest-cov
-  - pip install coveralls
-  - pip install codecov
-  - pip install codeclimate-test-reporter
+  - pip install -r requirements_test.txt
+  - pip install -r requirements_travis.txt
 
 # command to run tests
 script:
